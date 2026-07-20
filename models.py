@@ -1,41 +1,209 @@
+import torch
 from torch import nn
 
+
 class LeNet5(nn.Module):
-    def __init__(self):
+    def __init__(self, pth_file=None):
         super().__init__()
-        self.conv1 = nn.Sequential(nn.Conv2d(in_channels=1, kernel_size=5, padding=2, out_channels=6), nn.ReLU())
-        self.sub2 = nn.MaxPool2d(kernel_size=2)
-        self.conv3 = nn.Sequential(nn.Conv2d(in_channels=6, kernel_size=5, out_channels=16), nn.ReLU())
-        self.sub4 = nn.MaxPool2d(kernel_size=2)
-        self.conv5 = nn.Sequential(nn.Conv2d(in_channels=16, kernel_size=5, out_channels=120), nn.ReLU())
-        self.full6 = nn.Sequential(nn.Flatten(), nn.Linear(in_features=120, out_features=84), nn.ReLU())
-        self.full7 = nn.Linear(in_features=84, out_features=10)
+        self.conv = nn.Sequential(
+                nn.Conv2d(1, 6, kernel_size=5, padding=2),
+                nn.ReLU(),
+                nn.MaxPool2d(kernel_size=2, return_indices=True),
+                nn.Conv2d(6, 16, kernel_size=5),
+                nn.ReLU(),
+                nn.MaxPool2d(kernel_size=2, return_indices=True),
+                nn.Conv2d(16, 120, kernel_size=5),
+                nn.ReLU())
+
+        self.full = nn.Sequential(
+                nn.Flatten(),
+                nn.Linear(120, 84),
+                nn.ReLU(),
+                nn.Linear(84, 10))
+
+        self.pool_indices = dict()
+        self.activations = dict()
+
+        if pth_file is not None:
+            self._initialize_weights(pth_file)
 
     def forward(self, x):
-        x = self.conv1(x)
-        x = self.sub2(x)
-        x = self.conv3(x)
-        x = self.sub4(x)
-        x = self.conv5(x)
-        x = self.full6(x)
-        x = self.full7(x)
+        for i, layer in enumerate(self.conv):
+            if isinstance(layer, nn.MaxPool2d):
+                x, m = layer(x)
+                self.pool_indices[i] = m
+            else:
+                x = layer(x)
+
+            self.activations[i] = x
+
+        x = self.full(x)
         return x
+
+    def _initialize_weights(self, pth_file):
+        state_dict = torch.load(pth_file, weights_only=True)
+
+        for i, layer in enumerate(self.conv):
+            if isinstance(layer, nn.Conv2d):
+                layer.weight.data = state_dict[f'conv.{i}.weight'].data
+                layer.bias.data = state_dict[f'conv.{i}.bias'].data
+
+        for i, layer in enumerate(self.full):
+            if isinstance(layer, nn.Linear):
+                layer.weight.data = state_dict[f'full.{i}.weight'].data
+                layer.bias.data = state_dict[f'full.{i}.bias'].data
+
 
 class FberNet(nn.Module):
-    def __init__(self):
+    def __init__(self, pth_file=None):
         super().__init__()
-        self.conv1 = nn.Sequential(nn.Conv2d(in_channels=1, kernel_size=5, padding=2, out_channels=3), nn.ReLU())
-        self.sub2 = nn.MaxPool2d(kernel_size=2)
-        self.conv3 = nn.Sequential(nn.Conv2d(in_channels=3, kernel_size=5, out_channels=10), nn.ReLU())
-        self.sub4 = nn.MaxPool2d(kernel_size=2)
-        self.conv5 = nn.Sequential(nn.Conv2d(in_channels=10, kernel_size=5, out_channels=30), nn.ReLU())
-        self.full6 = nn.Sequential(nn.Flatten(), nn.Linear(in_features=30, out_features=10))
+
+        self.conv = nn.Sequential(
+                nn.Conv2d(1, 6, kernel_size=3, padding=1),
+                nn.ReLU(),
+                nn.MaxPool2d(kernel_size=2, return_indices=True),
+                nn.Conv2d(6, 10, kernel_size=3, padding=1),
+                nn.ReLU(),
+                nn.MaxPool2d(kernel_size=2, return_indices=True),
+                nn.Conv2d(10, 20, kernel_size=3, padding=1),
+                nn.ReLU())
+
+        self.full = nn.Sequential(
+                nn.Flatten(),
+                nn.Linear(20 * 7 * 7, 84),
+                nn.ReLU(),
+                nn.Linear(84, 10))
+
+        self.pool_indices = dict()
+        self.activations = dict()
+
+        if pth_file is not None:
+            self._initialize_weights(pth_file)
 
     def forward(self, x):
-        x = self.conv1(x)
-        x = self.sub2(x)
-        x = self.conv3(x)
-        x = self.sub4(x)
-        x = self.conv5(x)
-        x = self.full6(x)
+        for i, layer in enumerate(self.conv):
+            if isinstance(layer, nn.MaxPool2d):
+                x, m = layer(x)
+                self.pool_indices[i] = m
+            else:
+                x = layer(x)
+
+            self.activations[i] = x
+
+        x = self.full(x)
         return x
+
+    def _initialize_weights(self, pth_file):
+        state_dict = torch.load(pth_file, weights_only=True)
+
+        for i, layer in enumerate(self.conv):
+            if isinstance(layer, nn.Conv2d):
+                layer.weight.data = state_dict[f'conv.{i}.weight'].data
+                layer.bias.data = state_dict[f'conv.{i}.bias'].data
+
+        for i, layer in enumerate(self.full):
+            if isinstance(layer, nn.Linear):
+                layer.weight.data = state_dict[f'full.{i}.weight'].data
+                layer.bias.data = state_dict[f'full.{i}.bias'].data
+
+
+class DeconvLeNet5(nn.Module):
+    def __init__(self, pth_file=None):
+        super().__init__()
+
+        self._deconv2conv = {0: 6, 2: 3, 4: 0}
+        self._conv2deconv = {6: 0, 3: 2, 0: 4}
+        self._unpool2pool = {1: 5, 3: 2}
+
+        self.deconv = nn.Sequential(
+                nn.ConvTranspose2d(120, 16, kernel_size=5, bias=False),
+                nn.MaxUnpool2d(kernel_size=2),
+                nn.ConvTranspose2d(16, 6, kernel_size=5, bias=False),
+                nn.MaxUnpool2d(kernel_size=2),
+                nn.ConvTranspose2d(6, 1, kernel_size=5, bias=False, padding=2))
+
+        if pth_file is not None:
+            self._initialize_weights(pth_file)
+
+    def forward(self, x, layer_idx, map_idx, pool_indices):
+        if layer_idx not in self._conv2deconv.keys():
+            raise ValueError(f'Layer {layer_idx} is not a convolutional layer')
+
+        start_idx = self._conv2deconv[layer_idx]
+
+        layer = self.deconv[start_idx]
+        start_layer = nn.ConvTranspose2d(1, layer.out_channels,
+                                         kernel_size=layer.kernel_size,
+                                         bias=False,
+                                         padding=layer.padding)
+        start_layer.weight.data = self.deconv[start_idx]\
+            .weight[map_idx].data[None, :, :, :]
+        x = start_layer(x)
+
+        for i, layer in enumerate(self.deconv[start_idx + 1:],
+                                  start=start_idx + 1):
+            if isinstance(layer, torch.nn.MaxUnpool2d):
+                x = layer(x, pool_indices[self._unpool2pool[i]])
+                x = nn.functional.relu(x)
+            else:
+                x = layer(x)
+        return x
+
+    def _initialize_weights(self, pth_file):
+        state_dict = torch.load(pth_file, weights_only=True)
+
+        for i, layer in enumerate(self.deconv):
+            if isinstance(layer, nn.ConvTranspose2d):
+                layer.weight.data = state_dict[
+                        f'conv.{self._deconv2conv[i]}.weight'].data
+
+
+class DeconvFberNet(nn.Module):
+    def __init__(self, pth_file=None):
+        super().__init__()
+
+        self._deconv2conv = {0: 6, 2: 3, 4: 0}
+        self._conv2deconv = {6: 0, 3: 2, 0: 4}
+        self._unpool2pool = {1: 5, 3: 2}
+
+        self.deconv = nn.Sequential(
+                nn.ConvTranspose2d(20, 10, kernel_size=3, padding=1, bias=False),
+                nn.MaxUnpool2d(kernel_size=2),
+                nn.ConvTranspose2d(10, 6, kernel_size=3, padding=1, bias=False),
+                nn.MaxUnpool2d(kernel_size=2),
+                nn.ConvTranspose2d(6, 1, kernel_size=3, padding=1, bias=False))
+
+        if pth_file is not None:
+            self._initialize_weights(pth_file)
+
+    def forward(self, x, layer_idx, map_idx, pool_indices):
+        if layer_idx not in self._conv2deconv.keys():
+            raise ValueError(f'Layer {layer_idx} is not a convolutional layer')
+
+        start_idx = self._conv2deconv[layer_idx]
+
+        layer = self.deconv[start_idx]
+        start_layer = nn.ConvTranspose2d(1, layer.out_channels,
+                                         kernel_size=layer.kernel_size,
+                                         bias=False,
+                                         padding=layer.padding)
+        start_layer.weight.data = self.deconv[start_idx]\
+            .weight[map_idx].data[None, :, :, :]
+        x = start_layer(x)
+
+        for i, layer in enumerate(self.deconv[start_idx + 1:],
+                                  start=start_idx + 1):
+            if isinstance(layer, torch.nn.MaxUnpool2d):
+                x = layer(x, pool_indices[self._unpool2pool[i]])
+                x = nn.functional.relu(x)
+            else:
+                x = layer(x)
+        return x
+
+    def _initialize_weights(self, pth_file):
+        state_dict = torch.load(pth_file, weights_only=True)
+
+        for i, layer in enumerate(self.deconv):
+            if isinstance(layer, nn.ConvTranspose2d):
+                layer.weight.data = state_dict[
+                        f'conv.{self._deconv2conv[i]}.weight'].data
