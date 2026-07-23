@@ -78,14 +78,16 @@ def main():
     from torch import nn, optim
     import models
 
-    torch.manual_seed(10406308320747545401)
+    torch.manual_seed(1131615)
 
     train_loader = load_data(train=True)
     test_loader = load_data(train=False)
 
     # model = models.LeNet5()
     # model = models.FberNet()
-    model = models.FberNet2()
+    # model = models.FberNet2()
+    # model = models.FirstNet()
+    model = models.SecondNet(pth_file='secondnet_fashion.pth')
     num_parameters = sum([p.numel()
                           for p in model.parameters() if p.requires_grad])
     print(f'Model has {num_parameters} parameters.')
@@ -94,11 +96,13 @@ def main():
     criterion = nn.CrossEntropyLoss()
 
     train(model, optimizer, criterion, train_loader,
-          epochs=10, test_loader=test_loader, normalize_filters=True)
+          epochs=20, test_loader=test_loader, normalize_filters=True)
 
     # torch.save(model.state_dict(), 'lenet5_fashion.pth')
     # torch.save(model.state_dict(), 'fbernet_fashion.pth')
-    torch.save(model.state_dict(), 'fbernet2_fashion.pth')
+    # torch.save(model.state_dict(), 'fbernet2_fashion.pth')
+    # torch.save(model.state_dict(), 'firstnet_fashion.pth')
+    torch.save(model.state_dict(), 'secondnet_fashion.pth')
 
 
 if __name__ == '__main__':
