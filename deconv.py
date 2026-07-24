@@ -15,7 +15,7 @@ class_names = [
 ]
 
 
-def visualize_all_maps(model, deconv, layer_idx, x, y, pred):
+def visualize_all_maps(model, deconv, layer_idx, x, y, pred, save_path=None):
     imgs = []
     indices = []
     true_max = 0.0
@@ -85,41 +85,62 @@ def visualize_all_maps(model, deconv, layer_idx, x, y, pred):
         axes_inputs[i].axis('off')
         axes_deconv[i].axis('off')
 
+    if save_path is not None:
+        plt.savefig(save_path)
     plt.show()
 
 
 def main():
+
+    MODEL_PARAMS = {
+            'first': {
+                'layers': [0, 3],
+                'type': models.FirstNet,
+                'type_deconv': models.DeconvFirstNet,
+                'pth_file': 'firstnet_fashion.pth',
+                },
+            'second': {
+                'layers': [0, 3, 6, 8],
+                'type': models.SecondNet,
+                'type_deconv': models.DeconvSecondNet,
+                'pth_file': 'secondnet_fashion.pth',
+                },
+            }
+
     with torch.no_grad():
         loader = load_data(batch_size=10000, train=False)
 
         x, y = next(iter(loader))
 
-        model = models.FirstNet(pth_file='firstnet_fashion.pth')
-        # model = models.SecondNet(pth_file='secondnet_fashion.pth')
-        num_parameters = sum([p.numel()
-                              for p in model.parameters() if p.requires_grad])
-        print(f'Model has {num_parameters} parameters.')
-        model.eval()
-        output = model(x)
-        _, pred = torch.max(output.data, 1)
-
-        accuracy = 100 * accuracy_score(y, pred)
-
-        print(f'Model accuracy: {accuracy:.2f} %',
-              f'- Model error rate {100 - accuracy:.2f} %')
-
-        ConfusionMatrixDisplay.from_predictions(y, pred, normalize='true', display_labels=class_names)
-
-        deconv = models.DeconvFirstNet(pth_file='firstnet_fashion.pth')
-        # deconv = models.DeconvSecondNet(pth_file='secondnet_fashion.pth')
-        deconv.eval()
-
         plt.ion()
-        # for i in [0, 3, 6, 8]:
-        for i in [0, 3]:
-            visualize_all_maps(model, deconv, i, x, y, pred)
+        for model, params in MODEL_PARAMS.items():
+            print(f'== Model `{model}` ==')
 
-        input()
+            model = params['type'](pth_file=params['pth_file'])
+
+            num_parameters = sum([p.numel()
+                                  for p in model.parameters() if p.requires_grad])
+
+            print(f'Model has {num_parameters} parameters.')
+            model.eval()
+            output = model(x)
+            _, pred = torch.max(output.data, 1)
+
+            accuracy = 100 * accuracy_score(y, pred)
+
+            print(f'Model accuracy: {accuracy:.2f} %',
+                  f'- Model error rate {100 - accuracy:.2f} %')
+
+            ConfusionMatrixDisplay.from_predictions(y, pred, normalize='true', display_labels=class_names)
+
+            deconv = params['type_deconv'](pth_file=params['pth_file'])
+            deconv.eval()
+
+            for i in params['layers']:
+                visualize_all_maps(model, deconv, i, x, y, pred, save_path=f'{model}_{i}_deconv.svg')
+
+            input()
+
 
 if __name__ == '__main__':
     main()

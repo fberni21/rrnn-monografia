@@ -65,7 +65,6 @@ def load_data(batch_size=128, train=True):
 
 @torch.no_grad()
 def renormalize_conv_filters(model: nn.Module, max_rms: float = 0.1):
-    """Renormalizes convolutional filters whose RMS exceeds `max_rms` back down to `max_rms`."""
     for module in model.modules():
         if isinstance(module, nn.Conv2d):
             w = module.weight
@@ -83,26 +82,30 @@ def main():
     train_loader = load_data(train=True)
     test_loader = load_data(train=False)
 
-    # model = models.LeNet5()
-    # model = models.FberNet()
-    # model = models.FberNet2()
-    # model = models.FirstNet()
-    model = models.SecondNet(pth_file='secondnet_fashion.pth')
+    MODEL = 'second'
+
+    if MODEL == 'first':
+        model = models.FirstNet()
+        path = 'firstnet_fashion.pth'
+        normalize_filters = False
+    elif MODEL == 'second':
+        model = models.SecondNet()
+        path = 'secondnet_fashion.pth'
+        normalize_filters = True
+    else:
+        raise ValueError(f"Model '{MODEL}' is not valid")
+
     num_parameters = sum([p.numel()
                           for p in model.parameters() if p.requires_grad])
-    print(f'Model has {num_parameters} parameters.')
+    print(f'Model `{MODEL}`  has {num_parameters} parameters.')
 
     optimizer = optim.Adam(model.parameters(), lr=0.001)
     criterion = nn.CrossEntropyLoss()
 
-    train(model, optimizer, criterion, train_loader,
-          epochs=20, test_loader=test_loader, normalize_filters=True)
+    train(model, optimizer, criterion, train_loader, epochs=10,
+          test_loader=test_loader, normalize_filters=normalize_filters)
 
-    # torch.save(model.state_dict(), 'lenet5_fashion.pth')
-    # torch.save(model.state_dict(), 'fbernet_fashion.pth')
-    # torch.save(model.state_dict(), 'fbernet2_fashion.pth')
-    # torch.save(model.state_dict(), 'firstnet_fashion.pth')
-    torch.save(model.state_dict(), 'secondnet_fashion.pth')
+    torch.save(model.state_dict(), path)
 
 
 if __name__ == '__main__':
