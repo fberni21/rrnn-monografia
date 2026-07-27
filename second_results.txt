@@ -1,0 +1,10 @@
+Model `second`  has 21572 parameters.
+Test accuracy: 88.89
+Model `second`  has 21572 parameters.
+Test accuracy: 88.73
+Model `second`  has 21572 parameters.
+Test accuracy: 88.73
+Model `second`  has 21572 parameters.
+Test accuracy: 89.05
+Model `second`  has 21572 parameters.
+Test accuracy: 89.17

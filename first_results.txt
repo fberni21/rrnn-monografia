@@ -1,0 +1,10 @@
+Model `first`  has 25034 parameters.
+Test accuracy: 87.96
+Model `first`  has 25034 parameters.
+Test accuracy: 88.11
+Model `first`  has 25034 parameters.
+Test accuracy: 87.72
+Model `first`  has 25034 parameters.
+Test accuracy: 88.14
+Model `first`  has 25034 parameters.
+Test accuracy: 87.98

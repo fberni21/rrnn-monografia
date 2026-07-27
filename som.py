@@ -64,12 +64,17 @@ def main():
             'first': {
                 'layer': 4,
                 'type': models.FirstNet,
-                'pth_file': 'firstnet_fashion.pth',
+                'pth_file': 'weights/firstnet_fashion.pth',
                 },
             'second': {
                 'layer': 9,
                 'type': models.SecondNet,
-                'pth_file': 'secondnet_fashion.pth',
+                'pth_file': 'weights/secondnet_fashion.pth',
+                },
+            'third': {
+                'layer': 12,
+                'type': models.ThirdNet,
+                'pth_file': 'weights/thirdnet_fashion.pth',
                 },
             }
 
@@ -95,10 +100,10 @@ def main():
                                   learning_rate=1.0, num_iteration=10000)
 
             visualize_som_winners(som, data, y,
-                                  save_path=f'{model_name}_som.svg')
+                                  save_path=f'img/{model_name}_som.svg')
 
             visualize_som_examples(x.numpy(), wmap, grid_size,
-                                   save_path=f'{model_name}_som_examples.svg')
+                                   save_path=f'img/{model_name}_som_examples.svg')
 
     input()
 

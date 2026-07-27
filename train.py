@@ -6,7 +6,8 @@ from torchvision.transforms import v2
 
 
 def train(model, optimizer, criterion, train_loader,
-          epochs=10, test_loader=None, normalize_filters=False):
+          epochs=10, test_loader=None, normalize_filters=False,
+          verbose=True):
     for epoch in range(epochs):
         running_loss = 0.0
         model.train()
@@ -26,14 +27,15 @@ def train(model, optimizer, criterion, train_loader,
 
         running_loss /= dataset_len
 
-        print(f'[Epoch {epoch + 1:2d}/{epochs}]',
-              f'Training loss: {running_loss:.6f}', end='')
+        if verbose:
+            print(f'[Epoch {epoch + 1:2d}/{epochs}]',
+                  f'Training loss: {running_loss:.6f}', end='')
 
-        if test_loader is not None:
-            accuracy = compute_accuracy(model, test_loader)
-            print(f' - Test accuracy: {accuracy:.2f} %', end='')
+            if test_loader is not None:
+                accuracy = compute_accuracy(model, test_loader)
+                print(f' - Test accuracy: {accuracy:.2f} %', end='')
 
-        print()
+            print()
 
 
 def compute_accuracy(model, loader):
@@ -82,16 +84,23 @@ def main():
     train_loader = load_data(train=True)
     test_loader = load_data(train=False)
 
-    MODEL = 'second'
+    MODEL = 'third'
 
     if MODEL == 'first':
         model = models.FirstNet()
-        path = 'firstnet_fashion.pth'
+        path = 'weights/firstnet_fashion.pth'
         normalize_filters = False
+        lr = 0.001
     elif MODEL == 'second':
         model = models.SecondNet()
-        path = 'secondnet_fashion.pth'
+        path = 'weights/secondnet_fashion.pth'
         normalize_filters = True
+        lr = 0.001
+    elif MODEL == 'third':
+        model = models.ThirdNet()
+        path = 'weights/thirdnet_fashion.pth'
+        normalize_filters = True
+        lr = 0.002
     else:
         raise ValueError(f"Model '{MODEL}' is not valid")
 
@@ -99,13 +108,15 @@ def main():
                           for p in model.parameters() if p.requires_grad])
     print(f'Model `{MODEL}`  has {num_parameters} parameters.')
 
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optim.Adam(model.parameters(), lr=lr)
     criterion = nn.CrossEntropyLoss()
 
     train(model, optimizer, criterion, train_loader, epochs=10,
-          test_loader=test_loader, normalize_filters=normalize_filters)
+          test_loader=test_loader, normalize_filters=normalize_filters,
+          verbose=True)
 
     torch.save(model.state_dict(), path)
+    print(f"Test accuracy: {compute_accuracy(model, test_loader)} %")
 
 
 if __name__ == '__main__':

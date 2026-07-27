@@ -97,13 +97,19 @@ def main():
                 'layers': [0, 3],
                 'type': models.FirstNet,
                 'type_deconv': models.DeconvFirstNet,
-                'pth_file': 'firstnet_fashion.pth',
+                'pth_file': 'weights/firstnet_fashion.pth',
                 },
             'second': {
                 'layers': [0, 3, 6, 8],
                 'type': models.SecondNet,
                 'type_deconv': models.DeconvSecondNet,
-                'pth_file': 'secondnet_fashion.pth',
+                'pth_file': 'weights/secondnet_fashion.pth',
+                },
+            'third': {
+                'layers': [0, 2, 5, 7, 10, 12],
+                'type': models.ThirdNet,
+                'type_deconv': models.DeconvThirdNet,
+                'pth_file': 'weights/thirdnet_fashion.pth',
                 },
             }
 
@@ -113,13 +119,14 @@ def main():
         x, y = next(iter(loader))
 
         plt.ion()
-        for model, params in MODEL_PARAMS.items():
-            print(f'== Model `{model}` ==')
+        for model_name, params in MODEL_PARAMS.items():
+            print(f'== Model `{model_name}` ==')
 
             model = params['type'](pth_file=params['pth_file'])
 
             num_parameters = sum([p.numel()
-                                  for p in model.parameters() if p.requires_grad])
+                                  for p in model.parameters()
+                                  if p.requires_grad])
 
             print(f'Model has {num_parameters} parameters.')
             model.eval()
@@ -128,16 +135,21 @@ def main():
 
             accuracy = 100 * accuracy_score(y, pred)
 
-            print(f'Model accuracy: {accuracy:.2f} %',
-                  f'- Model error rate {100 - accuracy:.2f} %')
+            print(f'Model accuracy: {accuracy:.2f} % - Model error rate {100 - accuracy:.2f} %')
 
-            ConfusionMatrixDisplay.from_predictions(y, pred, normalize='true', display_labels=class_names)
+            _, ax = plt.subplots(figsize=(12, 8))
+            ConfusionMatrixDisplay.from_predictions(y, pred,
+                                                    normalize='true',
+                                                    ax=ax,
+                                                    display_labels=class_names)
+            plt.tight_layout()
+            plt.savefig(f'img/{model_name}_confusion.svg')
 
             deconv = params['type_deconv'](pth_file=params['pth_file'])
             deconv.eval()
 
             for i in params['layers']:
-                visualize_all_maps(model, deconv, i, x, y, pred, save_path=f'{model}_{i}_deconv.svg')
+                visualize_all_maps(model, deconv, i, x, y, pred, save_path=f'img/{model_name}_{i}_deconv.svg')
 
             input()
 
