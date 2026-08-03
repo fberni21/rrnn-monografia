@@ -8,3 +8,10 @@ Model `first`  has 25034 parameters.
 Test accuracy: 88.14
 Model `first`  has 25034 parameters.
 Test accuracy: 87.98
+
+limpio:
+87.96
+88.11
+87.72
+88.14
+87.98

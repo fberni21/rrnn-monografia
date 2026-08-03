@@ -8,3 +8,32 @@ Model `third`  has 22346 parameters.
 Test accuracy: 89.8 %
 Model `third`  has 22346 parameters.
 Test accuracy: 90.05 %
+
+limpio:
+89.45
+89.89
+90.05
+89.80
+90.05
+
+P value and statistical significance:
+The two-tailed P value equals 0.0002
+By conventional criteria, this difference is considered to be extremely statistically significant.
+
+Confidence interval:
+The mean of Second minus Third equals -0.9340
+95% confidence interval of this difference: From -1.2586 to -0.6094
+
+Intermediate values used in calculations:
+t = 6.6343
+df = 8
+standard error of difference = 0.141
+
+Review your data:
+Group	Second		Third
+Mean	88.9140		89.8480
+SD	0.1951		0.2470
+SEM	0.0873		0.1105
+N	5		5
+
+https://www.graphpad.com/quickcalcs/ttest2/
