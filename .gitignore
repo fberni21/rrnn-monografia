@@ -4,5 +4,6 @@ __pycache__/
 *.pth
 *.svg
 *.html
+*.pdf
 
 !*_diagram.svg

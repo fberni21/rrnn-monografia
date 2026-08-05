@@ -4,10 +4,14 @@ from torch.utils.data import DataLoader
 from torchvision.datasets import FashionMNIST
 from torchvision.transforms import v2
 
+import numpy as np
+import matplotlib.pyplot as plt
+
 
 def train(model, optimizer, criterion, train_loader,
           epochs=10, test_loader=None, normalize_filters=False,
           verbose=True):
+    losses = []
     for epoch in range(epochs):
         running_loss = 0.0
         model.train()
@@ -32,25 +36,39 @@ def train(model, optimizer, criterion, train_loader,
                   f'Training loss: {running_loss:.6f}', end='')
 
             if test_loader is not None:
-                accuracy = compute_accuracy(model, test_loader)
+                accuracy, loss = compute_accuracy(model, test_loader,
+                                                  loss_criterion=criterion)
+                losses.append([running_loss, loss])
                 print(f' - Test accuracy: {accuracy:.2f} %', end='')
+            else:
+                losses.append(running_loss)
 
             print()
+        else:
+            losses.append(running_loss)
+
+    return np.array(losses)
 
 
-def compute_accuracy(model, loader):
+def compute_accuracy(model, loader, loss_criterion=None):
     hits = 0
     model.eval()
     dataset_len = 0
+    running_loss = 0.0
     with torch.no_grad():
         for images, labels in loader:
             outputs = model(images)
+            if loss_criterion is not None:
+                running_loss += loss_criterion(outputs, labels).item()
             _, predictions = torch.max(outputs.data, 1)
             hits += (predictions == labels).sum().item()
             dataset_len += labels.shape[0]
 
     accuracy = 100 * hits / dataset_len
-    return accuracy
+    if loss_criterion is not None:
+        return accuracy, (running_loss / dataset_len)
+    else:
+        return accuracy
 
 
 def load_data(batch_size=128, train=True):
@@ -84,7 +102,7 @@ def main():
     train_loader = load_data(train=True)
     test_loader = load_data(train=False)
 
-    MODEL = 'third'
+    MODEL = 'large'
 
     if MODEL == 'first':
         model = models.FirstNet()
@@ -101,6 +119,11 @@ def main():
         path = '../weights/thirdnet_fashion.pth'
         normalize_filters = True
         lr = 0.002
+    elif MODEL == 'large':
+        model = models.LargeNet()
+        path = '../weights/largenet_fashion.pth'
+        normalize_filters = True
+        lr = 0.001
     else:
         raise ValueError(f"Model '{MODEL}' is not valid")
 
@@ -111,9 +134,21 @@ def main():
     optimizer = optim.Adam(model.parameters(), lr=lr)
     criterion = nn.CrossEntropyLoss()
 
-    train(model, optimizer, criterion, train_loader, epochs=10,
-          test_loader=test_loader, normalize_filters=normalize_filters,
-          verbose=True)
+    epochs = 10
+    losses = train(model, optimizer, criterion, train_loader,
+                   epochs=epochs, test_loader=test_loader,
+                   normalize_filters=normalize_filters, verbose=True)
+
+    plt.figure(figsize=(8, 6))
+    plt.plot(np.arange(1, epochs+1), losses[:, 0], label='Train')
+    plt.plot(np.arange(1, epochs+1), losses[:, 1], label='Test')
+    plt.grid()
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(f'../img/{MODEL}_loss.svg')
+    plt.show()
 
     torch.save(model.state_dict(), path)
     print(f"Test accuracy: {compute_accuracy(model, test_loader)} %")

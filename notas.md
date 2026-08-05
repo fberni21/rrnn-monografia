@@ -1,0 +1,3 @@
+- [x] curvas de entrenamiento
+- [ ] red más grande
+- [ ] más filtros en primera capa para ver si aprende otras primitivas

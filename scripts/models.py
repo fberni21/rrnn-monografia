@@ -327,3 +327,63 @@ class DeconvThirdNet(nn.Module):
             if isinstance(layer, nn.ConvTranspose2d):
                 layer.weight.data = state_dict[
                         f'conv.{self._deconv2conv[i]}.weight'].data
+
+
+class LargeNet(nn.Module):
+    def __init__(self, pth_file=None):
+        super().__init__()
+        self.conv = nn.Sequential(
+                nn.Conv2d(1, 16, kernel_size=3, stride=1, padding=1),
+                nn.ReLU(),
+                nn.Conv2d(16, 16, kernel_size=3, stride=1, padding=1),
+                nn.ReLU(),
+                nn.MaxPool2d(kernel_size=2, return_indices=True),
+                nn.Conv2d(16, 25, kernel_size=3, stride=1, padding=1),
+                nn.ReLU(),
+                nn.Conv2d(25, 25, kernel_size=3, stride=1, padding=1),
+                nn.ReLU(),
+                nn.MaxPool2d(kernel_size=2, return_indices=True),
+                nn.Conv2d(25, 36, kernel_size=3, stride=1),
+                nn.ReLU(),
+                nn.Conv2d(36, 36, kernel_size=3, stride=1),
+                nn.ReLU())
+
+        self.full = nn.Sequential(
+                nn.Flatten(),
+                nn.Linear(36 * 3 * 3, 128),
+                nn.ReLU(),
+                nn.Linear(128, 48),
+                nn.ReLU(),
+                nn.Linear(48, 10))
+
+        self.pool_indices = dict()
+        self.activations = dict()
+
+        if pth_file is not None:
+            self._initialize_weights(pth_file)
+
+    def forward(self, x):
+        for i, layer in enumerate(self.conv):
+            if isinstance(layer, nn.MaxPool2d):
+                x, m = layer(x)
+                self.pool_indices[i] = m
+            else:
+                x = layer(x)
+
+            self.activations[i] = x
+
+        x = self.full(x)
+        return x
+
+    def _initialize_weights(self, pth_file):
+        state_dict = torch.load(pth_file, weights_only=True)
+
+        for i, layer in enumerate(self.conv):
+            if isinstance(layer, nn.Conv2d):
+                layer.weight.data = state_dict[f'conv.{i}.weight'].data
+                layer.bias.data = state_dict[f'conv.{i}.bias'].data
+
+        for i, layer in enumerate(self.full):
+            if isinstance(layer, nn.Linear):
+                layer.weight.data = state_dict[f'full.{i}.weight'].data
+                layer.bias.data = state_dict[f'full.{i}.bias'].data
