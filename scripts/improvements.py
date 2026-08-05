@@ -29,26 +29,26 @@ def main():
 
         x, y = next(iter(loader))
 
-        first = models.FirstNet(pth_file='weights/firstnet_fashion.pth')
+        first = models.FirstNet(pth_file='../weights/firstnet_fashion.pth')
         first.eval()
         first_output = first(x)
         _, first_pred = torch.max(first_output.data, 1)
 
-        second = models.SecondNet(pth_file='weights/secondnet_fashion.pth')
+        second = models.SecondNet(pth_file='../weights/secondnet_fashion.pth')
         second.eval()
         second_output = second(x)
         _, second_pred = torch.max(second_output.data, 1)
 
-        third = models.ThirdNet(pth_file='weights/thirdnet_fashion.pth')
+        third = models.ThirdNet(pth_file='../weights/thirdnet_fashion.pth')
         third.eval()
         third_output = third(x)
         _, third_pred = torch.max(third_output.data, 1)
 
         plt.ion()
         plot_improvements(x, y, first_pred, second_pred,
-                          save_path='img/first_to_second.svg')
+                          save_path='../img/first_to_second.svg')
         plot_improvements(x, y, second_pred, third_pred,
-                          save_path='img/second_to_third.svg')
+                          save_path='../img/second_to_third.svg')
         input()
 
 

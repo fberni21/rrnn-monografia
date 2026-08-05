@@ -88,17 +88,17 @@ def main():
 
     if MODEL == 'first':
         model = models.FirstNet()
-        path = 'weights/firstnet_fashion.pth'
+        path = '../weights/firstnet_fashion.pth'
         normalize_filters = False
         lr = 0.001
     elif MODEL == 'second':
         model = models.SecondNet()
-        path = 'weights/secondnet_fashion.pth'
+        path = '../weights/secondnet_fashion.pth'
         normalize_filters = True
         lr = 0.001
     elif MODEL == 'third':
         model = models.ThirdNet()
-        path = 'weights/thirdnet_fashion.pth'
+        path = '../weights/thirdnet_fashion.pth'
         normalize_filters = True
         lr = 0.002
     else:
