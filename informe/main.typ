@@ -19,6 +19,11 @@
 )
 #set par(
     justify: true,
+    first-line-indent: 1.5em,
+    spacing: 0.65em,
+)
+#set block(
+    spacing: 1.3em,
 )
 
 #show heading: smallcaps
