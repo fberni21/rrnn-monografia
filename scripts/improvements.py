@@ -44,11 +44,18 @@ def main():
         third_output = third(x)
         _, third_pred = torch.max(third_output.data, 1)
 
+        large = models.LargeNet(pth_file='../weights/largenet_fashion.pth')
+        large.eval()
+        large_output = large(x)
+        _, large_pred = torch.max(large_output.data, 1)
+
         plt.ion()
         plot_improvements(x, y, first_pred, second_pred,
                           save_path='../img/first_to_second.svg')
         plot_improvements(x, y, second_pred, third_pred,
                           save_path='../img/second_to_third.svg')
+        plot_improvements(x, y, third_pred, large_pred,
+                          save_path='../img/third_to_large.svg')
         input()
 
 

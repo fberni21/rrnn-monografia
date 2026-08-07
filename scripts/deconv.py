@@ -111,6 +111,12 @@ def main():
                 'type_deconv': models.DeconvThirdNet,
                 'pth_file': '../weights/thirdnet_fashion.pth',
                 },
+            'large': {
+                'layers': [0, 2, 5, 7, 10, 12],
+                'type': models.LargeNet,
+                'type_deconv': models.DeconvLargeNet,
+                'pth_file': '../weights/largenet_fashion.pth',
+                },
             }
 
     with torch.no_grad():

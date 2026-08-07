@@ -76,6 +76,11 @@ def main():
                 'type': models.ThirdNet,
                 'pth_file': '../weights/thirdnet_fashion.pth',
                 },
+            'large': {
+                'layer': 12,
+                'type': models.LargeNet,
+                'pth_file': '../weights/largenet_fashion.pth',
+                },
             }
 
     with torch.no_grad():

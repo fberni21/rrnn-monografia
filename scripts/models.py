@@ -387,3 +387,64 @@ class LargeNet(nn.Module):
             if isinstance(layer, nn.Linear):
                 layer.weight.data = state_dict[f'full.{i}.weight'].data
                 layer.bias.data = state_dict[f'full.{i}.bias'].data
+
+
+class DeconvLargeNet(nn.Module):
+    def __init__(self, pth_file=None):
+        super().__init__()
+
+        self._deconv2conv = {0: 12, 2: 10, 5: 7, 7: 5, 10: 2, 12: 0}
+        self._conv2deconv = {0: 12, 2: 10, 5: 7, 7: 5, 10: 2, 12: 0}
+        self._unpool2pool = {3: 9, 8: 4}
+
+        self.deconv = nn.Sequential(
+                nn.ConvTranspose2d(36, 36, kernel_size=3, stride=1),
+                nn.ReLU(),
+                nn.ConvTranspose2d(36, 25, kernel_size=3, stride=1),
+                nn.MaxUnpool2d(kernel_size=2),
+                nn.ReLU(),
+                nn.ConvTranspose2d(25, 25, kernel_size=3, stride=1, padding=1),
+                nn.ReLU(),
+                nn.ConvTranspose2d(25, 16, kernel_size=3, stride=1, padding=1),
+                nn.MaxUnpool2d(kernel_size=2),
+                nn.ReLU(),
+                nn.ConvTranspose2d(16, 16, kernel_size=3, stride=1, padding=1),
+                nn.ReLU(),
+                nn.ConvTranspose2d(16, 1, kernel_size=3, stride=1, padding=1))
+
+        if pth_file is not None:
+            self._initialize_weights(pth_file)
+
+    def forward(self, x, layer_idx, map_idx, pool_indices):
+        if layer_idx not in self._conv2deconv.keys():
+            raise ValueError(f'Layer {layer_idx} is not a convolutional layer')
+
+        start_idx = self._conv2deconv[layer_idx]
+
+        layer = self.deconv[start_idx]
+        start_layer = nn.ConvTranspose2d(1, layer.out_channels,
+                                         kernel_size=layer.kernel_size,
+                                         bias=False,
+                                         padding=layer.padding,
+                                         stride=layer.stride,
+                                         output_padding=layer.output_padding)
+        start_layer.weight = nn.Parameter(self.deconv[start_idx]
+                                          .weight[map_idx])
+        x = start_layer(x)
+
+        for i, layer in enumerate(self.deconv[start_idx + 1:],
+                                  start=start_idx + 1):
+            if isinstance(layer, torch.nn.MaxUnpool2d):
+                x = layer(x, pool_indices[self._unpool2pool[i]])
+                x = nn.functional.relu(x)
+            else:
+                x = layer(x)
+        return x
+
+    def _initialize_weights(self, pth_file):
+        state_dict = torch.load(pth_file, weights_only=True)
+
+        for i, layer in enumerate(self.deconv):
+            if isinstance(layer, nn.ConvTranspose2d):
+                layer.weight.data = state_dict[
+                        f'conv.{self._deconv2conv[i]}.weight'].data
