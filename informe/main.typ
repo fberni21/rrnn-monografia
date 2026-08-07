@@ -130,8 +130,29 @@ Por último, se diseñó una red sin la restricción de tamaño aplicada a las a
     caption: [Arquitectura de _LargeNet_.],
 ) <fig:large-diagram>
 
-== Interpretabilidad
+== Análisis de las redes
 <sec:interpretabilidad>
+
+Las redes convolucionales diseñadas se examinan utilizando redes deconvolucionales, con las técnicas desarrolladas en @zeiler2014. Para cada una de las arquitecturas, se construyó su correspondiente red deconvolucional. La red deconvolucional toma como entrada una activación intermedia de la red (la salida de alguna de las capas convolucionales), y la retrotrae hacia el espacio de los píxeles. Cada uno de los bloques que componen la red original se reemplaza por una función que intenta invertir la operación.
+
+Los bloques de convolución se reemplazan por convoluciones traspuestas. Las rectificaciones ReLU se mantienen, garantizando que los mapas tengan activaciones no negativas. El submuestro, al no ser inversible, se reemplaza por una capa de _unpooling_ que utiliza la posición de la cual se extrajo originalmente el máximo valor y lo coloca en el correspondiente píxel, estableciendo los demás a cero. Este último reemplazo requiere que cuando se evalúa el conjunto de datos "hacia adelante" (usando la red original) se guarden los índices de los valores que activan cada máximo.
+
+Siguiendo las ideas presentadas en @zeiler2014, se intentó comprender a qué aspectos de las imágenes la red le da mayor importancia para realizar la clasificación. Para ello, para cada filtro de cada capa se toma la activación más fuerte entre todas las imágenes, y se la proyecta sobre el espacio de píxeles usando la deconvolución. Como la red se entrena discriminativamente, las activaciones más fuertes se corresponden con las partes de la imagen que más ayudan a clasificarla. La visualización de los filtros de la _FirstNet_ se muestran en la @fig:first-deconv.
+
+#figure(
+    placement: auto,
+    scope: "parent",
+    caption: [Visualización de las activaciones más grandes de los filtros de la _FirstNet_, proyectados en el espacio de los píxeles por su correspondiente red deconvolucional. A la izquierda, se muestran las imágenes del conjunto de evaluación que se corresponden con las activaciones proyectadas a la derecha.]
+)[
+    #block(fill: gray, inset: 4pt, radius: 2pt)[
+        *Capa 1*
+        #image("img/first_0_deconv.svg", width: 50%)
+    ]
+    #block(fill: gray, inset: 4pt, radius: 2pt)[
+        *Capa 2*
+        #image("img/first_3_deconv.svg", width: 67%)
+    ]
+] <fig:first-deconv>
 
 #bibliography("refs.bib", style: "institute-of-electrical-and-electronics-engineers")
 

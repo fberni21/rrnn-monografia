@@ -61,12 +61,7 @@ def visualize_all_maps(model, deconv, layer_idx, x, y, pred, save_path=None):
     fig = plt.figure(figsize=(ncols * 4, nrows * 2))
     subfigs = fig.subfigures(1, 2)
 
-    subfigs[0].suptitle(
-        'Corresponding Input Images (Peak Activation)', fontsize=14
-    )
     axes_inputs = np.array(subfigs[0].subplots(nrows, ncols)).flatten()
-
-    subfigs[1].suptitle(f'Reconstructions (Layer {layer_idx})', fontsize=14)
     axes_deconv = np.array(subfigs[1].subplots(nrows, ncols)).flatten()
 
     for i in range(num_maps):
@@ -85,6 +80,7 @@ def visualize_all_maps(model, deconv, layer_idx, x, y, pred, save_path=None):
         axes_inputs[i].axis('off')
         axes_deconv[i].axis('off')
 
+    plt.tight_layout()
     if save_path is not None:
         plt.savefig(save_path)
     plt.show()
