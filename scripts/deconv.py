@@ -69,7 +69,7 @@ def visualize_all_maps(model, deconv, layer_idx, x, y, pred, save_path=None):
         img = imgs[i]
 
         ax_in = axes_inputs[i]
-        ax_in.imshow(x[win_idx].view(28, 28).cpu(), cmap='Greys_r')
+        ax_in.imshow(x[win_idx].view(28, 28).cpu(), cmap='Greys')
         ax_in.axis('off')
 
         ax_rec = axes_deconv[i]

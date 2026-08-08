@@ -78,7 +78,7 @@ Desde la década de 2010, hubo avances significativos en la interpretabilidad de
 
 Se emplean redes convolucionales clásicas, similares a las presentadas en @lecun1989, entrenadas con el objetivo de categorizar las imágenes del conjunto de datos Fashion-MNIST @xiao2017. Las redes están compuestas por una sucesión de bloques funcionales, los cuales pueden ser convolucionales, rectificadores, submuestreadores, o capas completamente conectadas. Las capas convolucionales aprenden un conjunto de filtros, los cuales se convolucionan con sus entradas. Los rectificadores aplican la función ReLU (definida como $ReLU(x) = max(x, 0)$) a sus entradas. Los submuestradores son _max-pool_, que subdividen la entrada en regiones sin solapamiento y eligen de cada una el valor más grande para reducir la dimensión. Las capas completamente conectadas finalmente clasifican la imagen en función de los _features_ extraídos por las capas anteriores.
 
-El entrenamiento de las redes se hace sobre el conjunto de datos Fashion-MNIST. Este _dataset_ busca ser una alternativa más compleja a MNIST, el cual fue introducido por LeCun _et al._ en 1998 @lecun1998gradient. Fashion-MNIST consta de 60000 imágenes de entrenamiento y 10000 de evaluación, de $28 times 28$ píxeles en formato blanco y negro, las cuales muestran artículos de ropa distribuidos equitativamente entre las siguientes categorías:
+El entrenamiento de las redes se hace sobre el conjunto de datos Fashion-MNIST. Este _dataset_ busca ser una alternativa más compleja a MNIST, el cual fue introducido por LeCun _et al._ en 1998 @lecun1998gradient. Fashion-MNIST consta de 60000 imágenes de entrenamiento y 10000 de evaluación, de $28 times 28$ píxeles en formato blanco y negro, las cuales muestran artículos de ropa distribuidos equitativamente entre diez categorías:
 0. _T-shirt/top_ (remera/top),
 1. _Trouser_ (pantalón),
 2. _Pullover_ (pulóver),
@@ -103,31 +103,31 @@ Similarmente, estudiando con técnicas de interpretabilidad a _SecondNet_, se di
 Por último, se diseñó una red sin la restricción de tamaño aplicada a las anteriores, denominada _LargeNet_, cuya arquitectura se muestra en la @fig:large-diagram. _LargeNet_ tiene 79873 parámetros, distribuidos en seis capas convolucionales y tres completamente conectadas (160, 2320, 3625, 5650, 8136 y 11700; 41600, 6192 y 490 parámetros, respectivamente). Las capas convolucionales tienen los mismos tamaños de fitros, _strides_ y _paddings_ que la _ThirdNet_.
 
 #figure(
-    placement: auto,
+    placement: top,
     scope: "parent",
     image("img/first_diagram.svg", width: 41.2%),
-    caption: [Arquitectura de _FirstNet_.],
+    caption: [Arquitectura de la _FirstNet_.],
 ) <fig:first-diagram>
 
 #figure(
-    placement: auto,
+    placement: top,
     scope: "parent",
     image("img/second_diagram.svg", width: 71.3%),
-    caption: [Arquitectura de _SecondNet_.],
+    caption: [Arquitectura de la _SecondNet_.],
 ) <fig:second-diagram>
 
 #figure(
-    placement: auto,
+    placement: top,
     scope: "parent",
     image("img/third_diagram.svg", width: 94.2%),
-    caption: [Arquitectura de _ThirdNet_.],
+    caption: [Arquitectura de la _ThirdNet_.],
 ) <fig:third-diagram>
 
 #figure(
-    placement: auto,
+    placement: top,
     scope: "parent",
     image("img/large_diagram.svg", width: 100%),
-    caption: [Arquitectura de _LargeNet_.],
+    caption: [Arquitectura de la _LargeNet_.],
 ) <fig:large-diagram>
 
 == Análisis de las redes
@@ -140,19 +140,142 @@ Los bloques de convolución se reemplazan por convoluciones traspuestas. Las rec
 Siguiendo las ideas presentadas en @zeiler2014, se intentó comprender a qué aspectos de las imágenes la red le da mayor importancia para realizar la clasificación. Para ello, para cada filtro de cada capa se toma la activación más fuerte entre todas las imágenes, y se la proyecta sobre el espacio de píxeles usando la deconvolución. Como la red se entrena discriminativamente, las activaciones más fuertes se corresponden con las partes de la imagen que más ayudan a clasificarla. La visualización de los filtros de la _FirstNet_ se muestran en la @fig:first-deconv.
 
 #figure(
-    placement: auto,
+    placement: top,
     scope: "parent",
     caption: [Visualización de las activaciones más grandes de los filtros de la _FirstNet_, proyectados en el espacio de los píxeles por su correspondiente red deconvolucional. A la izquierda, se muestran las imágenes del conjunto de evaluación que se corresponden con las activaciones proyectadas a la derecha.]
 )[
-    #block(fill: gray, inset: 4pt, radius: 2pt)[
+    #block(fill: gray, outset: 4pt, radius: 2pt)[
         *Capa 1*
-        #image("img/first_0_deconv.svg", width: 50%)
+        #image("img/first_0_deconv.svg", width: 33%)
     ]
     #block(fill: gray, inset: 4pt, radius: 2pt)[
         *Capa 2*
-        #image("img/first_3_deconv.svg", width: 67%)
+        #image("img/first_3_deconv.svg", width: 50%)
     ]
 ] <fig:first-deconv>
+
+// TODO: mejorar el caption
+#figure(
+    placement: top,
+    scope: "parent",
+    caption: [Visualización de las activaciones más grandes de los filtros de la _SecondNet_, proyectados en el espacio de los píxeles por su correspondiente red deconvolucional. A la izquierda, se muestran las imágenes del conjunto de evaluación que se corresponden con las activaciones proyectadas a la derecha.]
+)[
+    #grid(columns: (1fr, 1fr), gutter: 1em, align: horizon,
+    grid.cell(
+        block(fill: gray, inset: 4pt, radius: 2pt)[
+            *Capa 1*
+            #image("img/second_0_deconv.svg")
+        ]
+    ),
+    grid.cell(
+        block(fill: gray, inset: 4pt, radius: 2pt)[
+            *Capa 2*
+            #image("img/second_3_deconv.svg")
+        ]
+    ),
+    grid.cell(
+        block(fill: gray, inset: 4pt, radius: 2pt)[
+            *Capa 3*
+            #image("img/second_6_deconv.svg")
+        ]
+    ),
+    grid.cell(
+        block(fill: gray, inset: 4pt, radius: 2pt)[
+            *Capa 4*
+            #image("img/second_8_deconv.svg")
+        ]
+    ))
+] <fig:second-deconv>
+
+// TODO: mejorar el caption
+#figure(
+    placement: top,
+    scope: "parent",
+    caption: [Visualización de las activaciones más grandes de los filtros de la _ThirdNet_, proyectados en el espacio de los píxeles por su correspondiente red deconvolucional. A la izquierda, se muestran las imágenes del conjunto de evaluación que se corresponden con las activaciones proyectadas a la derecha.]
+)[
+    #grid(columns: (1fr, 1fr), gutter: 1em, align: horizon,
+    grid.cell(
+        block(fill: gray, inset: 4pt, radius: 2pt, width: 75%)[
+            *Capa 1*
+            #image("img/third_0_deconv.svg")
+        ]
+    ),
+    grid.cell(
+        block(fill: gray, inset: 4pt, radius: 2pt)[
+            *Capa 2*
+            #image("img/third_2_deconv.svg", width: 75%)
+        ]
+    ),
+    grid.cell(
+        block(fill: gray, inset: 4pt, radius: 2pt)[
+            *Capa 3*
+            #image("img/third_5_deconv.svg")
+        ]
+    ),
+    grid.cell(
+        block(fill: gray, inset: 4pt, radius: 2pt)[
+            *Capa 4*
+            #image("img/third_7_deconv.svg")
+        ]
+    ),
+    grid.cell(
+        block(fill: gray, inset: 4pt, radius: 2pt)[
+            *Capa 5*
+            #image("img/third_10_deconv.svg")
+        ]
+    ),
+    grid.cell(
+        block(fill: gray, inset: 4pt, radius: 2pt)[
+            *Capa 6*
+            #image("img/third_12_deconv.svg")
+        ]
+    ))
+] <fig:third-deconv>
+
+// TODO: mejorar el caption
+#figure(
+    placement: top,
+    scope: "parent",
+    caption: [Visualización de las activaciones más grandes de los filtros de la _LargeNet_, proyectados en el espacio de los píxeles por su correspondiente red deconvolucional. A la izquierda, se muestran las imágenes del conjunto de evaluación que se corresponden con las activaciones proyectadas a la derecha.]
+)[
+    #grid(columns: (1fr, 1fr), gutter: 1em, align: horizon,
+    grid.cell(
+        block(fill: gray, inset: 4pt, radius: 2pt)[
+            *Capa 1*
+            #image("img/large_0_deconv.svg")
+        ]
+    ),
+    grid.cell(
+        block(fill: gray, inset: 4pt, radius: 2pt)[
+            *Capa 2*
+            #image("img/large_2_deconv.svg")
+        ]
+    ),
+    grid.cell(
+        block(fill: gray, inset: 4pt, radius: 2pt)[
+            *Capa 3*
+            #image("img/large_5_deconv.svg")
+        ]
+    ),
+    grid.cell(
+        block(fill: gray, inset: 4pt, radius: 2pt)[
+            *Capa 4*
+            #image("img/large_7_deconv.svg")
+        ]
+    ),
+    grid.cell(
+        block(fill: gray, inset: 4pt, radius: 2pt)[
+            *Capa 5*
+            #image("img/large_10_deconv.svg")
+        ]
+    ),
+    grid.cell(
+        block(fill: gray, inset: 4pt, radius: 2pt)[
+            *Capa 6*
+            #image("img/large_12_deconv.svg")
+        ]
+    ))
+] <fig:large-deconv>
 
 #bibliography("refs.bib", style: "institute-of-electrical-and-electronics-engineers")
 
