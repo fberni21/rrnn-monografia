@@ -1,3 +1,6 @@
+#import "@preview/ctheorems:1.1.3": *
+#show: thmrules
+
 #set page(
     paper: "a4",
     margin: (x: 2.5cm, y: 2cm),
@@ -32,6 +35,8 @@
 #set math.equation(numbering: "(1)")
 #set figure(numbering: "1")
 #set enum(indent: 1em)
+
+#let definition = thmbox("definition", "Definición", inset: (x: 1.2em), base_level: 0)
 
 #show ref: it => {
     let eq = math.equation
@@ -183,7 +188,13 @@ La matriz de confusión de la _FirstNet_ se muestra en la @fig:first-confusion. 
 
 Los mapas autoorganizados de Kohonen son redes de neuronas, típicamente organizadas en una grilla bidimensional, que muestran un comportamiento emergente de auto-organización, preservando la topología de los datos de entrenamiento @kohonen1982self. Las neuronas se organizan de manera tal que las activaciones de neuronas vecinas son similares para eventos que se encuentran cerca en el espacio de entrada. Estas redes son útiles para visualizar datos de alta dimensionalidad, puesto que permiten transformar el espacio de entrada en una grilla bidimensional sin perder la estructura topológica inherente a los datos de entrada.
 
-Las visualizaciones utilizadas en este trabajo son variaciones de los ejemplos mostrados en la documentación de la biblioteca `minisom` para implemetar SOM en Python @vettigli2018. La primera, a la que denominaremos _mapa de clases_, muestra el número de clase al que se corresponde cada muestra, ubicado en la posición de la neurona ganadora del mapa (aquella que más se activa ante esa entrada). La entrada del mapa son las activaciones de una de las capas de la red convolucional, para la muestra en cuestión. La @fig:first-som muestra el mapa de clases construido con las activaciones de la última capa convolucional de la _FirstNet_. Observar cómo algunas de las clases se agrupan en forma clara (por ejemplo la clase 1, los pantalones), indicando que las activaciones de la _FirstNet_ son similares para todos lo pantalones. Por el contrario, la clase 6 de las camisas no está agrupada, mostrando que la red convolucional fue incapaz de extraer _features_ que se activen de manera similar en todas las camisas.
+Las visualizaciones utilizadas en este trabajo son variaciones de los ejemplos mostrados en la documentación de la biblioteca `minisom` para implemetar SOM en Python @vettigli2018. La primera la denominaremos _mapa de clases_.
+
+#definition[
+    Un _mapa de clases_ es una visualización que toma como entrada las activaciones de una capa de una red convolucional para cada una de las muestras de un conjunto de datos, y ubica en la posición de la neurona ganadora del SOM (la que más se activa ante dicha entrada) el número de clase al que se corresponde la muestra. El resultado es una grilla de números.
+]
+
+La @fig:first-som muestra el mapa de clases construido con las activaciones de la última capa convolucional de la _FirstNet_. Observar cómo algunas de las clases se agrupan en forma clara (por ejemplo la clase 1, los pantalones), indicando que las activaciones de la _FirstNet_ son similares para todos lo pantalones. Por el contrario, la clase 6 de las camisas no está agrupada, mostrando que la red convolucional fue incapaz de extraer _features_ que se activen de manera similar en todas las camisas.
 
 #figure(
     placement: auto,
@@ -192,7 +203,13 @@ Las visualizaciones utilizadas en este trabajo son variaciones de los ejemplos m
     image("img/first_som.svg", width: 100%)
 ) <fig:first-som>
 
-Una falencia de la técnica anterior es que se muestra únicamente la clase de las imágenes, sin referencia de cuál es la imagen original. Por ejemplo, no hay manera de entender visualmente por qué se forman dos agrupamientos para la clase 8 (los bolsos). La segunda visualización, denominada _mapa de imágenes_, muestra la imagen original ubicada en la posición de la neurona ganadora del mapa. Esto trae la ventaja de agregar información visual fácil de analizar, a costa de una imagen más grande y que carece de información de clases. El mapa de imágenes basado en las activaciones de la última capa convolucional de la _FirstNet_ se muestra en la @fig:first-som-imgs. Este segundo mapa revela información nueva: los dos agrupamientos de los bolsos se correponden con la presencia o no de una soga. A pesar de pertenecer a la misma clase, la red aprendió a darles representaciones sustancialmente diferentes a los bolsos con soga de aquellos que no la tienen.
+Una falencia de la técnica anterior es que se muestra únicamente la clase de las imágenes, sin referencia de cuál es la imagen original. Por ejemplo, no hay manera de entender visualmente por qué se forman dos agrupamientos para la clase 8 (los bolsos). La segunda visualización la denominaremos _mapa de imágenes_.
+
+#definition[
+    Un _mapa de imágenes_ es una visualización que toma como entrada las activaciones de una capa de una red convolucional para cada una de las muestras de un conjunto de datos, y ubica en la posición de la neurona ganadora del SOM (la que más se activa ante dicha entrada) la imagen de entrada. El resultado es una grilla de imágenes.
+]
+
+Esta visualización trae la ventaja de agregar información visual fácil de analizar, a costa de una imagen más grande y que carece de información de clases. El mapa de imágenes basado en las activaciones de la última capa convolucional de la _FirstNet_ se muestra en la @fig:first-som-imgs. Este segundo mapa revela información nueva: los dos agrupamientos de los bolsos se correponden con la presencia o no de una soga. A pesar de pertenecer a la misma clase, la red aprendió a darles representaciones sustancialmente diferentes a los bolsos con soga de aquellos que no la tienen.
 
 #figure(
     placement: auto,
