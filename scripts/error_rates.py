@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 
 def main():
-    labels = ['first', 'second', 'third', 'large']
+    labels = ['FirstNet', 'SecondNet', 'ThirdNet', 'LargeNet']
     color = ['b'] * 3 + ['r']
     mean = np.array([87.9820, 88.9140, 89.8480, 90.2480])
     std = np.array([0.1662, 0.1951, 0.2470, 0.5296])
@@ -20,7 +20,7 @@ def main():
                  r.get_height() + s + 0.5 * max(std),
                  t, ha='center', va='bottom')
 
-    plt.ylabel('Test error rate [%]')
+    plt.ylabel('Tasa de error de evaluación [%]')
     plt.savefig('../img/error_rates.svg')
     plt.show()
 
