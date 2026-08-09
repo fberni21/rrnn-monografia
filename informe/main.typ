@@ -115,7 +115,7 @@ Inicialmente, se elige una red convolucional de estructura sencilla denominada _
     caption: [Arquitectura de la _FirstNet_.],
 ) <fig:first-diagram>
 
-La arquitectura original se estudia utilizando las técnicas de interpretabilidad, según se especifica en la @sec:análisis. En función de las observaciones, se diseña una segunda red de tamaño (cantidad de parámetros) similar a _FirstNet_, denominada _SecondNet_, cuya arquitectura se muestra en la @fig:second-diagram. _SecondNet_ tiene 21,572 parámetros, distribuidos en cuatro capas convolucionales y una única capa completamente conectada (90, 1,312, 5,220 y 11,700; y 3,250 parámetros, respectivamente). Los filtros convolucionales son de tamaño $3 times 3$, el _stride_ es de 1 píxel, y el _padding_ es de 1 píxel a cada lado para las primeras dos capas, y nulo para las últimas dos. Hay dos capas de _max-pool_, intercaladas entre las convolucionales. Los filtros de esta red y las sucesivas se renormalizan si su valor cuadrático medio supera 0.1, como sugiere~@zeiler2014.
+La arquitectura original se estudia utilizando las técnicas de interpretabilidad, según se especifica en las siguientes secciones. En función de las observaciones, se diseña una segunda red de tamaño (cantidad de parámetros) similar a _FirstNet_, denominada _SecondNet_, cuya arquitectura se muestra en la @fig:second-diagram. _SecondNet_ tiene 21,572 parámetros, distribuidos en cuatro capas convolucionales y una única capa completamente conectada (90, 1,312, 5,220 y 11,700; y 3,250 parámetros, respectivamente). Los filtros convolucionales son de tamaño $3 times 3$, el _stride_ es de 1 píxel, y el _padding_ es de 1 píxel a cada lado para las primeras dos capas, y nulo para las últimas dos. Hay dos capas de _max-pool_, intercaladas entre las convolucionales. Los filtros de esta red y las sucesivas se renormalizan si su valor cuadrático medio supera 0.1, como sugiere~@zeiler2014.
 
 #figure(
     placement: auto,
@@ -142,17 +142,13 @@ Por último, se diseñó una red sin la restricción de tamaño aplicada a las a
     caption: [Arquitectura de la _LargeNet_.],
 ) <fig:large-diagram>
 
-== Análisis de las redes
-
-<sec:análisis>
-
-Con el objetivo de mejorar la arquitectura inicialmente planteada en la _FirstNet_, se utilizan diferentes técnicas de análisis de redes. El método principal es la interpretabilidad mediante redes deconvolucionales (_deconvnets_), presentado por Zeiler _et al._ en 2014~@zeiler2014. Las _deconvnets_ permiten entender cómo ajustar el tamaño y la distribución de los filtros de la red para obtener mejores resultados. El análisis se complementa estudiando la matriz de confusión~@miller1955analysis, para entender cómo la red distribuye sus aciertos y errores de clasificación, y si hay clases que se confunden mayoritariamente entre sí. Adicionalmente, se usan mapas autoorganizados (_self organizing maps_, o SOM), introducidos por Kohonen en 1982~@kohonen1982self, para visualizar cómo se distribuyen las muestras en el espacio latente de alta dimensionalidad de las activaciones de una capa.
-
-=== Métrica de desempeño
+== Métrica de desempeño
 
 La métrica principal evaluada es la tasa de error de evaluación, o _test error rate_. Para calcularla, se comparan las clasificaciones hechas por la red para todo el conjunto de evaluación, y se cuenta la cantidad de errores cometidos por el modelo (diferencias entre clase predicha y clase real). La tasa de error de evaluación es el cociente entre el número de errores y la cantidad de muestras del conjunto (10,000 para Fashion-MNIST). Un modelo es mejor que otro si su tasa de error de evaluación es inferior. Dado que el entrenamiento de las redes es estocástico, el desempeño de una red puede presentar dispersión. Para contrarrestar esto, se entrena cada modelo cinco veces, obteniendo la media y el desvío estándar de su tasa de error. Con esta información, puede realizarse una prueba $t$ de Student para determinar si la diferencia entre las tasas de error de evaluación medias de dos modelos es significativa.
 
-=== Redes deconvolucionales
+== Redes deconvolucionales
+
+Con el objetivo de mejorar la arquitectura inicialmente planteada en la _FirstNet_, se utilizan diferentes técnicas de análisis de redes. El método principal es la interpretabilidad mediante redes deconvolucionales (_deconvnets_), presentado por Zeiler _et al._ en 2014~@zeiler2014. Las _deconvnets_ permiten entender cómo ajustar el tamaño y la distribución de los filtros de la red para obtener mejores resultados.
 
 Las redes convolucionales diseñadas se analizan utilizando redes deconvolucionales, con las técnicas desarrolladas en~@zeiler2014. Para cada una de las arquitecturas, se construyó su correspondiente red deconvolucional. La red deconvolucional toma como entrada una activación intermedia de la red (la salida de alguna de las capas convolucionales), y la retrotrae hacia el espacio de los píxeles. Cada uno de los bloques que componen la red original se reemplaza por una función que invierte la operación.
 
@@ -184,7 +180,7 @@ Los filtros obtenidos para la _FirstNet_ muestran algunos inconvenientes. El com
 
 Por otro lado, la capa 2 de la red parece incapaz de reconstruir los objetos originales. Como los filtros se activan ante porciones casi aleatorias de las imágenes, se cree que las posteriores capas completamente conectadas tienen que hacer mayor trabajo para discriminar los objetos. El comportamiento errático de los filtros se atribuye en parte a los filtros inadecuados de la primera capa, y en parte al _stride_ de 2 píxeles utilizado, que reduce la dimensionalidad de los datos agresivamente.
 
-=== Matrices de confusión
+== Matrices de confusión
 
 Típicamente, el desempeño de un clasificador se evalúa usando su tasa de error, es decir, la proporción de muestras erróneamente clasificadas sobre el total de muestras evaluadas. Sin embargo, cuando se trabaja con múltiples clases esto no es suficiente dado que se pierde la información sobre si hay clases con tasas de error mayores que otras, y cuáles son. Para remediar esto, se utilizan las matrices de confusión~@miller1955analysis. Una matriz de confusión es una matriz cuadrada con tantas filas y columnas como clases tiene el conjunto de datos. Las filas representan las clases verdaderas, mientras que las columnas son las clases predichas por el modelo. En cada entrada, se coloca la cantidad de muestras que son de la clase correpondiente a la fila y que fueron clasificadas como pertenecientes a la clase de la columna. Por ejemplo, si la segunda fila son pantalones y la sexta columna son sandalias, en dicha entrada se colocará la cantidad de pantalones que el modelo creyó que eran sandalias. Naturalmente, un modelo perfecto tendrá únicamente valores no nulos en la diagonal, ya que allí la clase real y la predicha coinciden.
 
@@ -199,9 +195,9 @@ La matriz de confusión de la _FirstNet_ se muestra en la @fig:first-confusion. 
     image("img/first_confusion.svg", width: 100%)
 ) <fig:first-confusion>
 
-=== Mapas autoautoozados
+== Mapas autoorganizados
 
-Los mapas autoorganizados de Kohonen son redes de neuronas, típicamente organizadas en una grilla bidimensional, que muestran un comportamiento emergente de autoorganización, preservando la topología de los datos de entrenamiento~@kohonen1982self. Las neuronas se organizan de manera tal que las activaciones de neuronas vecinas son similares para eventos que se encuentran cerca en el espacio de entrada. Estas redes son útiles para visualizar datos de alta dimensionalidad, puesto que transforman el espacio de entrada en una grilla bidimensional sin perder la estructura topológica inherente a los datos de entrada.
+Se usan mapas autoorganizados (_self organizing maps_, o SOM) para visualizar cómo se distribuyen las muestras en el espacio latente de alta dimensionalidad de las activaciones de una capa. Los mapas autoorganizados introducidos por Kohonen~@kohonen1982self son redes de neuronas, típicamente organizadas en una grilla bidimensional, que muestran un comportamiento emergente de autoorganización, preservando la topología de los datos de entrenamiento. Las neuronas se organizan de manera tal que las activaciones de neuronas vecinas son similares para eventos que se encuentran cerca en el espacio de entrada.
 
 Las visualizaciones utilizadas en este trabajo son variaciones de los ejemplos mostrados en la documentación de la biblioteca `minisom` para implemetar SOM en Python~@vettigli2018. La primera la denominaremos _mapa de clases_.
 
