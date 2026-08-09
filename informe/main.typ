@@ -18,7 +18,6 @@
     font: "New Computer Modern",
     size: 10pt,
     lang: "es",
-    region: "AR",
 )
 #set par(
     justify: true,
@@ -110,7 +109,7 @@ Inicialmente, se elige una red convolucional de estructura sencilla denominada _
     caption: [Arquitectura de la _FirstNet_.],
 ) <fig:first-diagram>
 
-La arquitectura original se estudia utilizando las técnicas de interpretabilidad, según se especifica en la @sec:análisis. En función de las observaciones, se diseña una segunda red de tamaño (cantidad de parámetros) similar a _FirstNet_, denominada _SecondNet_, cuya arquitectura se muestra en la @fig:second-diagram. _SecondNet_ tiene 21,572 parámetros, distribuidos en cuatro capas convolucionales y una única capa completamente conectada (90, 1,312, 5,220 y 11,700; y 3,250 parámetros, respectivamente). Los filtros convolucionales son de tamaño $3 times 3$, el _stride_ es de 1 píxel, y el _padding_ es de 1 píxel a cada lado para las primeras dos capas, y nulo para las últimas dos. Hay dos capas de _max-pool_, intercaladas entre las convolucionales.
+La arquitectura original se estudia utilizando las técnicas de interpretabilidad, según se especifica en la @sec:análisis. En función de las observaciones, se diseña una segunda red de tamaño (cantidad de parámetros) similar a _FirstNet_, denominada _SecondNet_, cuya arquitectura se muestra en la @fig:second-diagram. _SecondNet_ tiene 21,572 parámetros, distribuidos en cuatro capas convolucionales y una única capa completamente conectada (90, 1,312, 5,220 y 11,700; y 3,250 parámetros, respectivamente). Los filtros convolucionales son de tamaño $3 times 3$, el _stride_ es de 1 píxel, y el _padding_ es de 1 píxel a cada lado para las primeras dos capas, y nulo para las últimas dos. Hay dos capas de _max-pool_, intercaladas entre las convolucionales. Los filtros de esta red y las sucesivas se renormalizan si su valor cuadrático medio supera 0.1, como sugiere @zeiler2014.
 
 #figure(
     placement: auto,
@@ -147,7 +146,7 @@ Con el objetivo de mejorar la arquitectura inicialmente planteada en la _FirstNe
 
 Las redes convolucionales diseñadas se analizan utilizando redes deconvolucionales, con las técnicas desarrolladas en~@zeiler2014. Para cada una de las arquitecturas, se construyó su correspondiente red deconvolucional. La red deconvolucional toma como entrada una activación intermedia de la red (la salida de alguna de las capas convolucionales), y la retrotrae hacia el espacio de los píxeles. Cada uno de los bloques que componen la red original se reemplaza por una función que intenta invertir la operación.
 
-Los bloques de convolución se reemplazan por convoluciones traspuestas. Las rectificaciones ReLU se mantienen, garantizando que los mapas tengan activaciones no negativas. El submuestreo, al no ser inversible, se reemplaza por una capa de _unpooling_ que utiliza la posición de la cual se extrajo originalmente el máximo valor y lo coloca en el correspondiente píxel, estableciendo los demás a cero. Este último reemplazo requiere que cuando se evalúa el conjunto de datos "hacia adelante" (usando la red original) se guarden los índices de los valores que activan cada máximo.
+Los bloques de convolución se reemplazan por convoluciones traspuestas. Las rectificaciones ReLU se mantienen, garantizando que los mapas tengan activaciones no negativas. El submuestreo, al no ser inversible, se reemplaza por una capa de _unpooling_ que utiliza la posición de la cual se extrajo originalmente el máximo valor y lo coloca en el correspondiente píxel, estableciendo los demás a cero. Este último reemplazo requiere que cuando se evalúa el conjunto de datos hacia adelante (usando la red original) se guarden los índices de los valores que activan cada máximo.
 
 Siguiendo las ideas presentadas en~@zeiler2014, se intentó comprender a qué aspectos de las imágenes la red le da mayor importancia para realizar la clasificación. Para ello, para cada filtro de cada capa se toma la activación más fuerte entre todas las imágenes, y se la proyecta sobre el espacio de píxeles usando la deconvolución. Como la red se entrena discriminativamente, las activaciones más fuertes se corresponden con las partes de la imagen que más ayudan a clasificarla. La visualización de los filtros de la _FirstNet_ se muestran en la @fig:first-deconv. Notar que en la primera capa, los filtros tienen campos receptivos de $7 times 7$ (el tamaño del filtro) por lo que se activan ante porciones pequeñas de la imagen original. En la segunda capa, la combinación de dos filtros en cascada y el _max-pooling_, agrandan el campo receptivo hasta cubrir prácticamente toda la imagen.
 
@@ -156,19 +155,24 @@ Siguiendo las ideas presentadas en~@zeiler2014, se intentó comprender a qué as
     scope: "parent",
     caption: [Visualización de las activaciones más grandes de los filtros de la _FirstNet_, proyectados en el espacio de los píxeles por su correspondiente red deconvolucional. A la izquierda, se muestran las imágenes del conjunto de evaluación que se corresponden con las activaciones proyectadas a la derecha.]
 )[
-    #block(fill: gray, outset: 4pt, radius: 2pt)[
-        *Capa 1*
-        #image("img/first_0_deconv.svg", width: 33%)
-    ]
-    #block(fill: gray, inset: 4pt, radius: 2pt)[
-        *Capa 2*
-        #image("img/first_3_deconv.svg", width: 50%)
-    ]
+    #grid(columns: (1fr, 1fr), gutter: 1em, align: horizon,
+    grid.cell(
+        block(fill: gray, outset: 4pt, radius: 2pt)[
+            *Capa 1*
+            #image("img/first_0_deconv.svg", width: 100%)
+        ]
+    ),
+    grid.cell(
+        block(fill: gray, inset: 4pt, radius: 2pt)[
+            *Capa 2*
+            #image("img/first_3_deconv.svg", width: 100%)
+        ]
+    ))
 ] <fig:first-deconv>
 
 Los filtros obtenidos para la _FirstNet_ muestran algunos inconvenientes. El comportamiento que se espera es que las primeras capas se activen ante aspectos de bajo nivel, como líneas, gradientes y patrones simples, mientras que las últimas capas combinan estos aspectos sencillos en formas complejas que la red usa para reconocer los objetos. Sin embargo, la capa 1 muestra tendencia a activarse ante patrones relativamente complejos, con contenidos de alta frecuencia. Una hipótesis planteada en este trabajo, basada en los resultados de~@zeiler2014, es que el tamaño de los filtros de la primera capa es demasiado grande.
 
-Por otro lado, la capa 2 de la red parece ser incapaz de reconstruir los objetos originales. Las activaciones de sus filtros parecen ruido, por lo que se cree que las posteriores capas completamente conectadas tienen que hacer mayor "trabajo" para discriminar los objetos. El comportamiento errático de los filtros se atribuye en parte a los filtros inadecuados de la primera capa, y en parte al _stride_ de 2 píxeles utilizado, que reduce la dimensionalidad de los datos agresivamente.
+Por otro lado, la capa 2 de la red parece ser incapaz de reconstruir los objetos originales. Como los filtros se activan ante porciones casi aleatorias de las imágenes, se cree que las posteriores capas completamente conectadas tienen que hacer mayor trabajo para discriminar los objetos. El comportamiento errático de los filtros se atribuye en parte a los filtros inadecuados de la primera capa, y en parte al _stride_ de 2 píxeles utilizado, que reduce la dimensionalidad de los datos agresivamente.
 
 === Matrices de confusión
 
@@ -233,6 +237,8 @@ La @fig:tasas muestra los desempeños obtenidos para las diferentes redes neuron
 Como se explicó en la @sec:desarrollo, primero se entrena la _FirstNet_ con el conjunto de datos Fashion-MNIST. La red obtenida logra una tasa de error del 12.0~%. En función de las observaciones hechas sobre la @fig:first-deconv, se determina que el tamaño de los filtros ($7 times 7$) y el _stride_ (2 píxeles) son inadecuados para el conjunto de datos en cuestión. Sin aumentar la cantidad de parámetros, se modifican los filtros a un tamaño de $3 times 3$ y el _stride_ se reduce a un píxel. Para poder aumentar la cantidad de capas convolucionales y de filtros, se decide remover una de las capas completamente conectadas. La hipótesis es que si la nueva red, la _SecondNet_ de la @fig:second-diagram, produce mejores representaciones internas al reducir el tamaño de los filtros, la capa final no necesitará demasiados parámetros para obtener resultados similares. Por otro lado, la matriz de confusión de la _FirstNet_ y el mal agrupamiento en el mapa de clases sugiere que el mayor lugar para mejoras está en la clasificación de las camisas. Aumentar el número de filtros por capa y el número de capas debería darle a la red mayo capacidad para extraer _features_ útiles para distinguir las camisas de las otras prendas similares.
 
 La _SecondNet_, diseñada según las mejoras antes notadas, logra una tasa de error del 11.1~%. reduciendo en 0.93 puntos porcentuales respecto de la _FirstNet_ ($p < 0.0001$). Este resultado es más interesante si se considera que la _SecondNet_ tiene 13.8~% menos parámetros. Con el objetivo de determinar si los filtros son más apropiados y considerar posibles mejoras, se analizó por medio de _deconvnets_ a este segundo modelo. Las activaciones de los filtros de la _SecondNet_ se muestran en la @fig:second-deconv. Ahora es posible ver que la primera capa aprendió a reconocer líneas orientadas, principalmente verticales y horizontales, así como una diagonal. En cuanto a las siguientes capas, los filtros combinan las detecciones de bajo nivel de las capas anteriores para activarse ante figuras más complejas. La capa 2 se activa por ejemplo ante dos bordes paralelos para detectar mangas, o ángulos para detectar tacos. La tercera capa detecta figuras aún más complejas, como la parte central de las sandalias. La última se activa ante figuras casi completas.
+
+Esta última capa y la anterior tienen filtros "muertos", que no se activan frente a ninguna parte de las imágenes (10 y 2 filtros, respectivamente). Esto probablemente se debe a la regularización que surge de la renormalización de filtros aplicada durante el entrenamiento. La regularización evita el sobreentrenamiento (_overfitting_), reduciendo la complejidad del modelo en forma automática.
 
 // TODO: mejorar el caption
 #figure(
@@ -301,6 +307,8 @@ En~@xiao2017 se citan algunos resultados obtenidos con diferentes arquitecturas 
         #image("img/large_0_deconv.svg", width: 100%)
     ]
 ] <fig:large-deconv>
+
+= Conclusiones
 
 // TODO: considerar agregar los resultados de las deconvoluciones, las matrices de confusión, y los mapas de clases/imágenes para las redes faltantes, dentro de un anexo para no estorbar la lectura, y solo dejar un par de ejemplos útiles dentro del cuerpo.
 

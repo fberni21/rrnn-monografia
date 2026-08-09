@@ -21,6 +21,7 @@ def main():
                  t, ha='center', va='bottom')
 
     plt.ylabel('Tasa de error de evaluación [%]')
+    plt.tight_layout()
     plt.savefig('../img/error_rates.svg')
     plt.show()
 
