@@ -1844,7 +1844,7 @@
        font-family="sans-serif"
        x="-204.36086"
        y="458.3974"
-       id="text22">Convolution</text>
+       id="text22">Convolución</text>
     <text
        class="text"
        dy="8.3221416"
@@ -1852,7 +1852,7 @@
        font-family="sans-serif"
        x="-31.230593"
        y="458.3974"
-       id="text23">Convolution</text>
+       id="text23">Convolución</text>
     <text
        class="text"
        dy="8.3221416"
@@ -1868,7 +1868,7 @@
        font-family="sans-serif"
        x="255.21449"
        y="458.3974"
-       id="text25">Convolution</text>
+       id="text25">Convolución</text>
     <text
        class="text"
        dy="8.3221416"
@@ -1876,7 +1876,7 @@
        font-family="sans-serif"
        x="420.17126"
        y="458.3974"
-       id="text26">Convolution</text>
+       id="text26">Convolución</text>
     <text
        class="text"
        dy="8.3221416"
@@ -1892,7 +1892,7 @@
        font-family="sans-serif"
        x="706.24475"
        y="458.3974"
-       id="text28">Convolution</text>
+       id="text28">Convolución</text>
     <text
        class="text"
        dy="8.3221416"
@@ -1900,15 +1900,31 @@
        font-family="sans-serif"
        x="859.31268"
        y="458.3974"
-       id="text29">Convolution</text>
+       id="text29">Convolución</text>
     <text
        class="text"
        dy="8.3221416"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:23.7333px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;opacity:1;stroke-width:1.4861"
        font-family="sans-serif"
-       x="1004.4345"
+       x="1064.4345"
        y="458.3974"
-       id="text30">Full</text>
+       id="text30">FC</text>
+    <text
+       class="text"
+       dy="8.3221416"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:23.7333px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;opacity:1;stroke-width:1.4861"
+       font-family="sans-serif"
+       x="1207.4345"
+       y="458.3974"
+       id="text43">FC</text>
+    <text
+       class="text"
+       dy="8.3221416"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:23.7333px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;opacity:1;stroke-width:1.4861"
+       font-family="sans-serif"
+       x="1277.4345"
+       y="458.3974"
+       id="text44">FC</text>
     <text
        class="info"
        dy="-7.1332641"

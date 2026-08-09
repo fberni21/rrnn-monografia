@@ -342,7 +342,7 @@
        font-family="sans-serif"
        x="802.55463"
        y="431.29941"
-       id="text10">Convolution</text>
+       id="text10">Convolución</text>
     <text
        class="text"
        dy="3.073725"
@@ -358,15 +358,23 @@
        font-family="sans-serif"
        x="903.41132"
        y="431.29941"
-       id="text12">Convolution</text>
+       id="text12">Convolución</text>
     <text
        class="text"
        dy="3.073725"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8.76691px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;opacity:1;stroke-width:0.54888"
        font-family="sans-serif"
-       x="957.24652"
+       x="967.24652"
        y="431.29941"
-       id="text13">Full</text>
+       id="text13">FC</text>
+    <text
+       class="text"
+       dy="3.073725"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8.76691px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;opacity:1;stroke-width:0.54888"
+       font-family="sans-serif"
+       x="999.24652"
+       y="431.29941"
+       id="text20">FC</text>
     <text
        class="info"
        dy="-2.6346214"

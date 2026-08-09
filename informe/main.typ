@@ -73,9 +73,9 @@
 
 = Introducción
 
-Las redes neuronales convolucionales (CNNs) son herramientas muy eficaces en tareas de clasificación de imágenes. Esta arquitectura fue introducida en 1989 por LeCun _et al._~@lecun1989, y su uso se ha extendido durante las décadas posteriores gracias a los avances en _hardware_, así como con la aparición de nuevos conjuntos de entrenamiento. Sin embargo, durante mucho tiempo la elección exacta de la arquitectura y los hiperparámetros estuvo mayormente influida por heurísticas e intuiciones, debido a que no se comprendía su funcionamiento interno.
+Las redes neuronales convolucionales (CNNs) son herramientas de aprendizaje muy eficaces en las tareas de clasificación de imágenes. Esta arquitectura fue introducida en 1989 por LeCun _et al._~@lecun1989, y su uso se ha extendido durante las décadas posteriores gracias a los avances en _hardware_, así como con la aparición de nuevos conjuntos de entrenamiento. Sin embargo, durante mucho tiempo la elección exacta de la arquitectura y sus hiperparámetros estuvo mayormente influida por heurísticas e intuiciones, debido a que no se comprendía su funcionamiento interno.
 
-Desde la década de 2010, hubo avances significativos en la interpretabilidad de las redes neuronales convolucionales. Una herramienta muy útil fue desarrollada a partir de la red deconvolucional que proyecta las activaciones de las capas intermedias de la red original en los píxeles del espacio de entrada. Esta técnica fue inicialmente pensada para realizar aprendizaje no supervisado~@zeiler2011, pero luego se usó para la interpretación de redes neuronales, mostrando qué partes de una imagen de entrada son responsables de una dada activación~@zeiler2014. Una red deconvolucional se construye a partir de la inversión de los bloques funcionales que componen la CNN.
+Desde la década de 2010, hubo avances significativos en la interpretabilidad de las redes neuronales convolucionales. Por ejemplo, un avance provino de la red deconvolucional, que proyecta las activaciones de las capas intermedias de la red original en los píxeles del espacio de entrada. Esta técnica fue inicialmente pensada para realizar aprendizaje no supervisado~@zeiler2011, pero luego se usó para la interpretación de redes neuronales, mostrando qué partes de una imagen de entrada son responsables de una dada activación~@zeiler2014. Una red deconvolucional se construye a partir de la inversión de los bloques funcionales que componen la CNN.
 
 // TODO: completar introducción
 // TODO: agregar introducción sobre mapas de Kohonen/SOM
@@ -83,9 +83,9 @@ Desde la década de 2010, hubo avances significativos en la interpretabilidad de
 = Desarrollo
 <sec:desarrollo>
 
-Se emplean redes convolucionales clásicas, similares a las presentadas en~@lecun1989, entrenadas con el objetivo de categorizar las imágenes del conjunto de datos Fashion-MNIST~@xiao2017. Las redes están compuestas por una sucesión de bloques funcionales, los cuales pueden ser convolucionales, rectificadores, submuestreadores, o capas completamente conectadas. Las capas convolucionales aprenden un conjunto de filtros, los cuales se convolucionan con sus entradas. Los rectificadores aplican la función ReLU (definida como $ReLU(x) = max(x, 0)$) a sus entradas. Los submuestradores son _max-pool_, que subdividen la entrada en regiones sin solapamiento y eligen de cada una el valor más grande para reducir la dimensión. Las capas completamente conectadas finalmente clasifican la imagen en función de los _features_ extraídos por las capas anteriores.
+Se emplean redes convolucionales clásicas, similares a las presentadas en~@lecun1989, entrenadas con el objetivo de categorizar las imágenes del conjunto de datos Fashion-MNIST~@xiao2017. Las redes están compuestas por una sucesión de bloques funcionales, los cuales pueden ser convolucionales, rectificadores, submuestreadores, o capas completamente conectadas (_fully connected_, o FC). Las capas convolucionales aprenden un conjunto de filtros, los cuales se convolucionan con sus entradas. Los rectificadores aplican la función ReLU (definida como $ReLU(x) = max(x, 0)$) a sus entradas. Los submuestradores son _max-pool_, que subdividen la entrada en regiones no solapadas y eligen de cada una el valor más grande para reducir la dimensión. Las capas completamente conectadas finalmente clasifican la imagen en función de los _features_ extraídos por las capas anteriores.
 
-El entrenamiento de las redes se hace sobre el conjunto de datos Fashion-MNIST. Este _dataset_ busca ser una alternativa más compleja a MNIST, el cual fue introducido por LeCun _et al._ en 1998~@lecun1998gradient. Fashion-MNIST consta de 60000 imágenes de entrenamiento y 10000 de evaluación, de $28 times 28$ píxeles en formato blanco y negro, las cuales muestran artículos de ropa distribuidos equitativamente entre diez categorías:
+El entrenamiento de las redes se hace sobre el conjunto de datos Fashion-MNIST. Este _dataset_ busca ser una alternativa más compleja que el clásico MNIST, introducido por LeCun _et al._ en 1998~@lecun1998gradient. Fashion-MNIST consta de 60,000 imágenes de entrenamiento y 10,000 de evaluación, de $28 times 28$ píxeles en formato blanco y negro, las cuales muestran artículos de ropa distribuidos equitativamente entre diez categorías:
 0. _T-shirt/top_ (remera/top),
 1. _Trouser_ (pantalón),
 2. _Pullover_ (pulóver),
@@ -94,20 +94,14 @@ El entrenamiento de las redes se hace sobre el conjunto de datos Fashion-MNIST. 
 5. _Sandal_ (sandalia),
 6. _Shirt_ (camisa),
 7. _Sneaker_ (zapatilla),
-8. _Bag_ (bolso),
-9. _Ankle boot_ (bota),
+8. _Bag_ (bolso), y
+9. _Ankle boot_ (bota).
 
-Se entrena las redes utilizando retropropagación de errores (_error backpropagation_). La función de pérdida utilizada es la entropía cruzada, dado que la tarea es discriminativa. En todos los casos, se realizan diez épocas, entrenando con _batches_ de 128 muestras. Se utiliza el optimizador Adam~@kingma2014adam, y una tasa de aprendizaje fija elegida empíricamente para cada modelo.
+Se entrena las redes utilizando retropropagación de errores (_error backpropagation_)~@rumelhart1986. La función de pérdida utilizada es la entropía cruzada, dado que la tarea es discriminativa. En todos los casos, se entrena durante diez épocas, en _batches_ de 128 muestras. Se utiliza el optimizador Adam~@kingma2014adam, y una tasa de aprendizaje fija elegida empíricamente para cada modelo.
 
 == Arquitectura de las redes
 
-Inicialmente, se elige una red convolucional de estructura sencilla denominada _FirstNet_, la cual se muestra en la @fig:first-diagram. La red tiene 25034 parámetros, distribuidos en dos capas convolucionales con filtros cuadrados, y dos capas completamente conectadas (250 y 3690; 20244 y 850 parámetros, respectivamente). Los filtros convolucionales son de tamaño $7 times 7$ píxeles, y la convolución se realiza con un paso (_stride_) de 2 píxeles, agregando relleno (_padding_) de 3 píxeles. A la salida de cada capa convolucional se aplica la función ReLU.
-
-La arquitectura original se estudia utilizando las técnicas de interpretabilidad, según se especifica en la @sec:análisis. En función de las observaciones, se diseña una segunda red de tamaño (cantidad de parámetros) similar a _FirstNet_, denominada _SecondNet_, cuya arquitectura se muestra en la @fig:second-diagram. _SecondNet_ tiene 21572 parámetros, distribuidos en cuatro capas convolucionales y una única capa completamente conectada (90, 1312, 5220 y 11700; y 3250 parámetros, respectivamente). Los filtros convolucionales son de tamaño $3 times 3$, el _stride_ es de 1 píxel, y el _padding_ es de 1 píxel a cada lado para las primeras dos capas, y nulo para las últimas dos.
-
-Similarmente, estudiando con técnicas de interpretabilidad a _SecondNet_, se diseña una tercera red, denominada _ThirdNet_, cuya arquitectura se muestra en la @fig:third-diagram. _ThirdNet_ tiene 22346 parámetros, distribuidos en seis capas convolucionales y una única capa completamente conectada (40, 333, 1312, 3625, 5650 y 8136; y 3250 parámetros, respectivamente. Los filtros convolucionales son de tamaños y parámetros idénticos a los de _SecondNet_, con _padding_ de 1 píxel a cada lado para las primeras cuatro capas, y nulo para las últimas dos.
-
-Por último, se diseñó una red sin la restricción de tamaño aplicada a las anteriores, denominada _LargeNet_, cuya arquitectura se muestra en la @fig:large-diagram. _LargeNet_ tiene 79873 parámetros, distribuidos en seis capas convolucionales y tres completamente conectadas (160, 2320, 3625, 5650, 8136 y 11700; 41600, 6192 y 490 parámetros, respectivamente). Las capas convolucionales tienen los mismos tamaños de fitros, _strides_ y _paddings_ que la _ThirdNet_.
+Inicialmente, se elige una red convolucional de estructura sencilla denominada _FirstNet_, la cual se muestra en la @fig:first-diagram. La red tiene 25,034 parámetros, distribuidos en dos capas convolucionales con filtros cuadrados, y dos capas completamente conectadas (250 y 3,690; 20,244 y 850 parámetros, respectivamente). Los filtros convolucionales son de tamaño $7 times 7$ píxeles, y la convolución se realiza con un paso (_stride_) de 2 píxeles, agregando relleno (_padding_) de 3 píxeles. A la salida de cada capa convolucional y la primera capa completamente conectada se aplica la función ReLU. Una capa de _max-pool_ se ubica entre las dos convolucionales.
 
 #figure(
     placement: auto,
@@ -116,12 +110,16 @@ Por último, se diseñó una red sin la restricción de tamaño aplicada a las a
     caption: [Arquitectura de la _FirstNet_.],
 ) <fig:first-diagram>
 
+La arquitectura original se estudia utilizando las técnicas de interpretabilidad, según se especifica en la @sec:análisis. En función de las observaciones, se diseña una segunda red de tamaño (cantidad de parámetros) similar a _FirstNet_, denominada _SecondNet_, cuya arquitectura se muestra en la @fig:second-diagram. _SecondNet_ tiene 21,572 parámetros, distribuidos en cuatro capas convolucionales y una única capa completamente conectada (90, 1,312, 5,220 y 11,700; y 3,250 parámetros, respectivamente). Los filtros convolucionales son de tamaño $3 times 3$, el _stride_ es de 1 píxel, y el _padding_ es de 1 píxel a cada lado para las primeras dos capas, y nulo para las últimas dos. Hay dos capas de _max-pool_, intercaladas entre las convolucionales.
+
 #figure(
     placement: auto,
     scope: "parent",
-    image("img/second_diagram.svg", width: 71.3%),
+    image("img/second_diagram.svg", width: 62.4%),
     caption: [Arquitectura de la _SecondNet_.],
 ) <fig:second-diagram>
+
+Similarmente, estudiando con técnicas de interpretabilidad a _SecondNet_, se diseña una tercera red, denominada _ThirdNet_, cuya arquitectura se muestra en la @fig:third-diagram. _ThirdNet_ tiene 22,346 parámetros, distribuidos en seis capas convolucionales y una única capa completamente conectada (40, 333, 1,312, 3,625, 5,650 y 8,136; y 3,250 parámetros, respectivamente). Los filtros convolucionales son de tamaños y parámetros idénticos a los de _SecondNet_, con _padding_ de 1 píxel a cada lado para las primeras cuatro capas, y nulo para las últimas dos. Hay dos capas de _max-pool_, ubicadas tras la segunda y cuarta capas convolucionales.
 
 #figure(
     placement: auto,
@@ -129,6 +127,8 @@ Por último, se diseñó una red sin la restricción de tamaño aplicada a las a
     image("img/third_diagram.svg", width: 94.2%),
     caption: [Arquitectura de la _ThirdNet_.],
 ) <fig:third-diagram>
+
+Por último, se diseñó una red sin la restricción de tamaño aplicada a las anteriores, denominada _LargeNet_, cuya arquitectura se muestra en la @fig:large-diagram. _LargeNet_ tiene 79,873 parámetros, distribuidos en seis capas convolucionales y tres completamente conectadas (160, 2,320, 3,625, 5,650, 8,136 y 11,700; 41,600, 6,192 y 490 parámetros, respectivamente). Las capas convolucionales tienen los mismos tamaños de fitros, _strides_ y _paddings_ que la _ThirdNet_. La cantidad y posición de las capas de _max-pool_ también es la misma.
 
 #figure(
     placement: auto,
