@@ -287,7 +287,20 @@ Los cambios que derivan en la _ThirdNet_ se ven motivados por los filtros de la 
 
 La inspección visual de las técnicas de interpretabilidad muestra resultados similares a los de la _SecondNet_. No se encuentran nuevos puntos de mejora, por lo que esta red fue la última entrenada con estos métodos. Como comparación, se entrenó un modelo considerablemente más grande, la _LargeNet_ de casi 80,000 parámetros. Se buscó ver cuánto más puede disminuirse la tasa de error utilizando simple fuerza bruta. Esta red obtiene una tasa de error de 9.8~%, cuya diferencia no es estadísticamente significativa comparada con la _ThirdNet_ ($p = 0.1644$). Esto sugiere que las técnicas de interpretabilidad empleadas para diseñar las redes logran un desempeño satisfactorio y casi tan bueno como una red mucho más grande. La matriz de confusión revela que el desempeño mejora principalmente en las remeras/tops, y en los pulóveres.
 
-En~@xiao2017 se citan algunos resultados obtenidos con diferentes arquitecturas y técnicas de aprendizaje para la tarea de clasificación del conjunto Fashion-MNIST#footnote[Notar que la referencia indica que los resultados _no_ fueron validados por terceros.]. El mejor resultado citado es una tasa de error de 3.3~%, utilizando una _wide residual network_. Por otro lado, el mejor desempeño para redes convolucionales de menos de 100,000 parámetros es una tasa de error del 7.5~%.
+La _LargeNet_ cuenta con el número más grande de filtros en su primera capa y deja ver un fenómeno interesante. Las activaciones más grandes de la primera capa se muestran en la @fig:large-deconv. La mayor disponibilidad de filtros permitió que la red aprenda a reconocer más formas que líneas verticales y horizontales, haciendo mejor uso de ellos que en las redes anteriores. Hay filtros que reconocen patrones en vestidos, líneas diagonales en sandalias, líneas paralelas en la soga de un bolso, etc. Esto se contrapone con la hipótesis que se formuló tras ver los filtros de la _SecondNet_: la red aprendía redundantemente a reconocer líneas verticales y horizontales no porque tuviera demasiados filtros en su primera capa, sino porque no tenía la suficiente cantidad. Este aspecto contraintuitivo remarca la dificultad de interpretar cómo un cambio de arquitectura en una red afectará su desempeño, y motiva a continuar el estudio de técnicas de interpretabilidad.
+
+En~@xiao2017 se citan algunos resultados obtenidos con diferentes arquitecturas y técnicas de aprendizaje para la tarea de clasificación del conjunto Fashion-MNIST#footnote[Esos resultados _no_ fueron validados por terceros.]. El mejor resultado citado es una tasa de error de 3.3~%, utilizando una _wide residual network_ @zagoruyko2016wide. Por otro lado, el mejor desempeño para redes convolucionales de menos de 100,000 parámetros es una tasa de error del 7.5~%.
+
+#figure(
+    placement: auto,
+    scope: "column",
+    caption: [Visualización de las activaciones más grandes de los filtros de la primera capa de la _LargeNet_, proyectados en el espacio de los píxeles por su correspondiente red deconvolucional. A la izquierda, se muestran las imágenes del conjunto de evaluación que se corresponden con las activaciones proyectadas a la derecha.]
+)[
+    #block(fill: gray, inset: 4pt, radius: 2pt)[
+        *Capa 1*
+        #image("img/large_0_deconv.svg", width: 100%)
+    ]
+] <fig:large-deconv>
 
 // TODO: considerar agregar los resultados de las deconvoluciones, las matrices de confusión, y los mapas de clases/imágenes para las redes faltantes, dentro de un anexo para no estorbar la lectura, y solo dejar un par de ejemplos útiles dentro del cuerpo.
 
