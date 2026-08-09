@@ -76,8 +76,7 @@ Las redes neuronales convolucionales (CNNs) son herramientas de aprendizaje muy 
 
 Desde la década de 2010, hubo avances significativos en la interpretabilidad de las redes neuronales convolucionales. Por ejemplo, un avance provino de la red deconvolucional, que proyecta las activaciones de las capas intermedias de la red original en los píxeles del espacio de entrada. Esta técnica fue inicialmente pensada para realizar aprendizaje no supervisado~@zeiler2011, pero luego se usó para la interpretación de redes neuronales, mostrando qué partes de una imagen de entrada son responsables de una dada activación~@zeiler2014. Una red deconvolucional se construye a partir de la inversión de los bloques funcionales que componen la CNN.
 
-// TODO: completar introducción
-// TODO: agregar introducción sobre mapas de Kohonen/SOM
+Otras técnicas de interpretabilidad de redes hacen uso de mapas autoorganizados (SOM), introducidos por Kohonen @kohonen1982self. D'Aquin @d2023finding utilizó estos mapas autoorganizados para explorar cómo una red neuronal codifica conceptos dentro de las representaciones internas de sus capas. En este trabajo también se utilizarán SOMs para investigar las representaciones internas de una red convolucional, pero para estudiar la extracción de características y mejorar su desempeño.
 
 = Desarrollo
 <sec:desarrollo>
@@ -189,9 +188,9 @@ La matriz de confusión de la _FirstNet_ se muestra en la @fig:first-confusion. 
     image("img/first_confusion.svg", width: 100%)
 ) <fig:first-confusion>
 
-=== Mapas autoorganizados
+=== Mapas autoautoozados
 
-Los mapas autoorganizados de Kohonen son redes de neuronas, típicamente organizadas en una grilla bidimensional, que muestran un comportamiento emergente de auto-organización, preservando la topología de los datos de entrenamiento~@kohonen1982self. Las neuronas se organizan de manera tal que las activaciones de neuronas vecinas son similares para eventos que se encuentran cerca en el espacio de entrada. Estas redes son útiles para visualizar datos de alta dimensionalidad, puesto que transforman el espacio de entrada en una grilla bidimensional sin perder la estructura topológica inherente a los datos de entrada.
+Los mapas autoorganizados de Kohonen son redes de neuronas, típicamente organizadas en una grilla bidimensional, que muestran un comportamiento emergente de autoorganización, preservando la topología de los datos de entrenamiento~@kohonen1982self. Las neuronas se organizan de manera tal que las activaciones de neuronas vecinas son similares para eventos que se encuentran cerca en el espacio de entrada. Estas redes son útiles para visualizar datos de alta dimensionalidad, puesto que transforman el espacio de entrada en una grilla bidimensional sin perder la estructura topológica inherente a los datos de entrada.
 
 Las visualizaciones utilizadas en este trabajo son variaciones de los ejemplos mostrados en la documentación de la biblioteca `minisom` para implemetar SOM en Python~@vettigli2018. La primera la denominaremos _mapa de clases_.
 
