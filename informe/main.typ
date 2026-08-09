@@ -205,7 +205,7 @@ Los mapas autoorganizados de Kohonen son redes de neuronas, típicamente organiz
 
 Las visualizaciones utilizadas en este trabajo son variaciones de los ejemplos mostrados en la documentación de la biblioteca `minisom` para implemetar SOM en Python~@vettigli2018. La primera la denominaremos _mapa de clases_.
 
-#definition[
+#definition("Mapa de clases")[
     Un _mapa de clases_ es una visualización que toma como entrada las activaciones de una capa de una red convolucional para cada una de las muestras de un conjunto de datos, y ubica en la posición de la neurona ganadora del SOM (la que más se activa ante dicha entrada) el número de clase al que se corresponde la muestra. El resultado es una grilla de números.
 ]
 
@@ -220,7 +220,7 @@ La @fig:first-som muestra el mapa de clases construido con las activaciones de l
 
 Una falencia de la técnica anterior es que se muestra únicamente la clase de las imágenes, sin referencia de cuál es la imagen original. Por ejemplo, no hay manera de entender visualmente por qué se forman dos agrupamientos para la clase 8 (los bolsos). La segunda visualización, que soluciona elegantemente este inconveniente, la denominaremos _mapa de imágenes_.
 
-#definition[
+#definition("Mapa de imágenes")[
     Un _mapa de imágenes_ es una visualización que toma como entrada las activaciones de una capa de una red convolucional para cada una de las muestras de un conjunto de datos, y ubica en la posición de la neurona ganadora del SOM (la que más se activa ante dicha entrada) la imagen de entrada. El resultado es una grilla de imágenes.
 ]
 
