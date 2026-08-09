@@ -1,39 +1,39 @@
 Model `large`  has 79873 parameters.
-Test accuracy: 89.58 %
-Model `large`  has 79873 parameters.
-Test accuracy: 90.68 %
-Model `large`  has 79873 parameters.
-Test accuracy: 89.84 %
+Test accuracy: 90.61 %
 Model `large`  has 79873 parameters.
 Test accuracy: 90.81 %
 Model `large`  has 79873 parameters.
-Test accuracy: 90.33 %
+Test accuracy: 90.53 %
+Model `large`  has 79873 parameters.
+Test accuracy: 90.53 %
+Model `large`  has 79873 parameters.
+Test accuracy: 91.06 %
 
 limpio:
-89.58
-90.68
-89.84
+90.61
 90.81
-90.33
+90.53
+90.53
+91.06
 
 P value and statistical significance:
-The two-tailed P value equals 0.1644
-By conventional criteria, this difference is considered to be not statistically significant.
+The two-tailed P value equals 0.0004
+By conventional criteria, this difference is considered to be extremely statistically significant.
 
 Confidence interval:
-The mean of Third minus Large equals -0.4000
-95% confidence interval of this difference: From -1.0026 to 0.2026
+The mean of Third minus Large equals -0.8600
+95% confidence interval of this difference: From -1.2064 to -0.5136
 
 Intermediate values used in calculations:
-t = 1.5306
+t = 5.7247
 df = 8
-standard error of difference = 0.261
+standard error of difference = 0.150
 
 Review your data:
 Group	Third		Large
-Mean	89.8480		90.2480
-SD	0.2470		0.5296
-SEM	0.1105		0.2368
+Mean	89.8480		90.7080
+SD	0.2470		0.2276
+SEM	0.1105		0.1018
 N	5		5
 
 https://www.graphpad.com/quickcalcs/ttest2/

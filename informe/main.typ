@@ -3,7 +3,7 @@
 
 #set page(
     paper: "a4",
-    margin: (x: 2.5cm, y: 2cm),
+    margin: 1in,
     columns: 2,
     numbering: "1",
     header: context {
@@ -220,7 +220,7 @@ Esta visualización trae la ventaja de agregar información visual fácil de ana
     placement: auto,
     scope: "parent",
     caption: [Mapa de imágenes de las activaciones de la última capa convolucional de la _FirstNet_. Las imágenes se encuentran posicionadas sobre la ubicación de la neurona ganadora del SOM ante las activaciones de esa entrada.],
-    image("img/first_som_examples.svg", width: 75%)
+    image("img/first_som_examples.svg", width: 100%)
 ) <fig:first-som-imgs>
 
 = Resultados
@@ -230,7 +230,7 @@ La @fig:tasas muestra los desempeños obtenidos para las diferentes redes neuron
 #figure(
     placement: auto,
     scope: "column",
-    caption: [Tasas de error de evaluación de los modelos entrenados, junto a su desvío estándar basado en cinco entrenamientos. El símbolo `(*)` indica que la diferencia es muy significativa ($p < 0.001$) respecto del modelo inmediatamente a su izquierda; mientras que `n.s.` indica que no es significativa ($p > 0.01$).],
+    caption: [Tasas de error de evaluación de los modelos entrenados, junto a su desvío estándar basado en cinco entrenamientos. El símbolo `(*)` indica que la diferencia es muy significativa ($p < 0.001$) respecto del modelo inmediatamente a su izquierda.],
     image("img/error_rates.svg", width: 100%)
 ) <fig:tasas>
 
@@ -291,7 +291,7 @@ El análisis de la matriz de confusión de la _SecondNet_, mostrada en la @fig:s
 
 Los cambios que derivan en la _ThirdNet_ se ven motivados por los filtros de la primera capa de la _SecondNet_, donde cuatro de ellos aprenden variaciones de líneas verticales. Dada esta repetición, se reduce la cantidad de filtros en la capa 1 a apenas cuatro. Por otro lado, se hace a la red más profunda, redistribuyendo la cantidad de filtros en las demás capas para mantener la cantidad de parámetros aproximadamente constante. Esta nueva red alcanza una tasa de error de 10.2~%, una reducción de 0.93 puntos porcentuales respecto de la _SecondNet_ ($p = 0.0002$). La mejora es aceptable, dado que solo se usaron 3.6~% más parámetros que en la red anterior. Comparado a la _FirstNet_, el desempeño es considerablemente mejor (una tasa de error casi 2 puntos porcentuales menor sobre el 12~% inicial), con 10.7~% menos parámetros.
 
-La inspección visual de las técnicas de interpretabilidad muestra resultados similares a los de la _SecondNet_. No se encuentran nuevos puntos de mejora, por lo que esta red fue la última entrenada con estos métodos. Como comparación, se entrenó un modelo considerablemente más grande, la _LargeNet_ de casi 80,000 parámetros. Se buscó ver cuánto más puede disminuirse la tasa de error utilizando simple fuerza bruta. Esta red obtiene una tasa de error de 9.8~%, cuya diferencia no es estadísticamente significativa comparada con la _ThirdNet_ ($p = 0.1644$). Esto sugiere que las técnicas de interpretabilidad empleadas para diseñar las redes logran un desempeño satisfactorio y casi tan bueno como una red mucho más grande. La matriz de confusión revela que el desempeño mejora principalmente en las remeras/tops, y en los pulóveres.
+La inspección visual de las técnicas de interpretabilidad muestra resultados similares a los de la _SecondNet_. No se encuentran nuevos puntos de mejora, por lo que esta red fue la última entrenada con estos métodos. Como comparación, se entrenó un modelo considerablemente más grande, la _LargeNet_ de casi 80,000 parámetros. Se buscó ver cuánto más puede disminuirse la tasa de error utilizando simple fuerza bruta. Esta red obtiene una tasa de error de 9.3~%, una reducción de 0.86 puntos porcentuales respecto de la _ThirdNet_ ($p = 0.0004$). Esto sugiere que las técnicas de interpretabilidad empleadas para diseñar las redes logran un desempeño satisfactorio y casi tan bueno como una red mucho más grande. La matriz de confusión revela que el desempeño mejora principalmente en las remeras/tops, y en los pulóveres.
 
 La _LargeNet_ cuenta con el número más grande de filtros en su primera capa y muestra un fenómeno interesante. Las activaciones más grandes de la primera capa se muestran en la @fig:large-deconv. La mayor disponibilidad de filtros permitió que la red aprenda a reconocer más formas que líneas verticales y horizontales, haciendo mejor uso de ellos que en las redes anteriores. Hay filtros que reconocen patrones en vestidos, líneas diagonales en sandalias, líneas paralelas en la soga de un bolso, etc. Esto se contrapone con la hipótesis que se formuló tras ver los filtros de la _SecondNet_: la red aprendía redundantemente a reconocer líneas verticales y horizontales no porque tuviera demasiados filtros en su primera capa, sino porque no tenía la suficiente cantidad. Este aspecto contraintuitivo remarca la dificultad de interpretar cómo un cambio de arquitectura en una red afectará su desempeño, y motiva a continuar el estudio de técnicas de interpretabilidad.
 
@@ -309,6 +309,12 @@ En~@xiao2017 se citan algunos resultados obtenidos con diferentes arquitecturas 
 ] <fig:large-deconv>
 
 = Conclusiones
+
+Este trabajo estudió el uso de técnicas de interpretabilidad de redes convolucionales, con el foco puesto en obtener mejor desempeño en redes pequeñas. Siguiendo las ideas presentadas por Zeiler _et al._ @zeiler2014 sobre redes deconvolucionales, se logró comprender visualmente cómo las redes convolucionales entrenadas para tareas de clasificación desarrollan capacidades de detección de patrones simples en sus primeras capas, y los combinan en las subsiguientes para reconocer características de más alto nivel. Esta técnica permitió reconocer falencias en la estructura de los filtros de la _FirstNet_, y las iteraciones posteriores mejoraron su buen desempeño original, reduciendo la tasa de error en forma significativa del 12~% al 10~%, en una red de apenas 22k parámetros. Este resultado en redes pequeñas es competitivo con el obtenido por "fuerza bruta" con una red de 80k parámetros, y está cerca de los mejores resultados reportados con redes convolucionales aún más grandes.
+
+Simultáneamente, se utilizaron los _mapas de clases_ y _mapas de características_ como herramientas de visualización que permiten comprender cómo las redes representan internamente a las imágenes. Entender este proceso es crucial para mejorar el desempeño de los modelos. Por otro lado, la visualización también revela comportamientos interesantes sobre el conjunto de datos, como la clara distinción interna que hace la _FirstNet_ entre bolsos con y sin soga.
+
+Finalmente, se destaca que la falta de intuición sobre el funcionamiento interno de los modelos puede llevar a decisiones de diseño incorrectas. Por ejemplo, la reducción de filtros en la primera capa de la _ThirdNet_ parecía lógica tras observar los filtros de la _SecondNet_, pero esta decisión resultó equivocada a la luz de los filtros vistos en el modelo más grande. Mejorar las técnicas de interpretabilidad y desarrollar nuevas herramientas será clave para diseñar modelos mejores y más eficientes.
 
 // TODO: considerar agregar los resultados de las deconvoluciones, las matrices de confusión, y los mapas de clases/imágenes para las redes faltantes, dentro de un anexo para no estorbar la lectura, y solo dejar un par de ejemplos útiles dentro del cuerpo.
 

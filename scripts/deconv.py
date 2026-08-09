@@ -139,10 +139,11 @@ def main():
 
             print(f'Model accuracy: {accuracy:.2f} % - Model error rate {100 - accuracy:.2f} %')
 
-            _, ax = plt.subplots(figsize=(8, 6))
+            _, ax = plt.subplots(figsize=(6, 6))
             ConfusionMatrixDisplay.from_predictions(y, pred,
                                                     normalize='true',
                                                     ax=ax,
+                                                    colorbar=False,
                                                     xticks_rotation=45,
                                                     display_labels=class_names)
             ax.set_xlabel("Clase predicha")

@@ -4,23 +4,22 @@ import matplotlib.pyplot as plt
 
 def main():
     labels = ['FirstNet', 'SecondNet', 'ThirdNet', 'LargeNet']
-    color = ['b'] * 3 + ['r']
-    mean = np.array([87.9820, 88.9140, 89.8480, 90.2480])
-    std = np.array([0.1662, 0.1951, 0.2470, 0.5296])
-    pvalue = np.array([0.0001, 0.0002, 0.261])
+    means = np.array([87.9820, 88.9140, 89.8480, 90.7080])
+    stds = np.array([0.1662, 0.1951, 0.2470, 0.2276])
+    pvalues = np.array([-1, 0.0001, 0.0002, 0.0004])
+    error_rates = 100 - means
 
-    plt.figure(figsize=(8, 6))
+    _, ax = plt.subplots(figsize=(6, 4))
 
-    bar = plt.bar(labels, 100 - mean, yerr=std, capsize=8, zorder=3,
-                  color=color, alpha=0.5)
+    bars = ax.bar(labels, error_rates, yerr=stds, capsize=8, zorder=3)
 
-    text = np.where(pvalue < 0.001, '(*)', 'n.s.')
-    for r, s, t in zip(bar[1:], std[1:], text):
-        plt.text(r.get_x() + r.get_width() / 2.0,
-                 r.get_height() + s + 0.5 * max(std),
-                 t, ha='center', va='bottom')
+    symbols = np.where(pvalues < 0.001, '(*)', 'n.s.')
+    labels = list(f"{e:.1f} %" + (f" {s}" if i > 0 else "")
+                  for i, (e, s) in enumerate(zip(error_rates, symbols)))
+    ax.bar_label(bars, padding=2, labels=labels)
 
     plt.ylabel('Tasa de error de evaluación [%]')
+    plt.grid(zorder=0)
     plt.tight_layout()
     plt.savefig('../img/error_rates.svg')
     plt.show()

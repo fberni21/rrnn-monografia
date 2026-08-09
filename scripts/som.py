@@ -50,6 +50,7 @@ def visualize_som_winners(som, data, targets, save_path=None):
 
     plt.axis([0, som.get_weights().shape[0], 0,  som.get_weights().shape[1]])
 
+    plt.axis('off')
     plt.tight_layout()
     if save_path is not None:
         plt.savefig(save_path)

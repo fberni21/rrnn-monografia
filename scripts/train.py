@@ -123,7 +123,7 @@ def main():
         model = models.LargeNet()
         path = '../weights/largenet_fashion.pth'
         normalize_filters = True
-        lr = 0.001
+        lr = 0.002
     else:
         raise ValueError(f"Model '{MODEL}' is not valid")
 
