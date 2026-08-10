@@ -1,8 +1,6 @@
 #import "@preview/ctheorems:1.1.3": *
 #show: thmrules
 
-// TODO: borrador
-
 #let doc_title = [Visualización de CNNs mediante Deconvnets y~Mapas Autoorganizados]
 
 #set page(
@@ -18,7 +16,6 @@
             #line(length: 100%)
         ]
     },
-    background: rotate(-60deg, text(84pt, font: "Adwaita Sans", fill: rgb("DDDDDD"))[*BORRADOR*])
 )
 #set text(
     font: "New Computer Modern",
@@ -253,7 +250,6 @@ La _SecondNet_, diseñada según las mejoras antes notadas, logra una tasa de er
 
 Esta última capa y la anterior tienen filtros "muertos", que no se activan frente a ninguna parte de las imágenes (10 y 2 filtros, respectivamente). Esto probablemente se debe a la regularización que surge de la renormalización de filtros aplicada durante el entrenamiento. La regularización evita el sobreentrenamiento (_overfitting_), reduciendo la complejidad del modelo en forma automática.
 
-// TODO: mejorar el caption
 #figure(
     placement: auto,
     scope: "parent",
@@ -331,7 +327,6 @@ Finalmente, se destaca que la falta de intuición sobre el funcionamiento intern
 
 #bibliography("refs.bib", style: "institute-of-electrical-and-electronics-engineers")
 
-// TODO: balancear columnas
 #place(bottom, float: true, scope: "parent", v(17cm))
 
 // vim: ts=4 sts=4 sw=4 lbr wrap
