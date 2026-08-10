@@ -108,6 +108,8 @@ Algunos ejemplos de cada categoría se muestran en la @fig:examples.
 
 Se entrenan las redes utilizando retropropagación de errores (_error backpropagation_)~@rumelhart1986. La función de pérdida utilizada es la entropía cruzada, dado que la tarea es discriminativa. En todos los casos, se entrena durante diez épocas, en _batches_ de 128 muestras. Se utiliza el optimizador Adam~@kingma2014adam, y una tasa de aprendizaje fija elegida empíricamente para cada modelo.
 
+El código utilizado para todos los experimentos se encuentra disponible en #link("https://github.com/fberni21/rrnn-monografia").
+
 == Arquitectura de las redes
 
 Inicialmente, se elige una red convolucional de estructura sencilla denominada _FirstNet_, la cual se muestra en la @fig:first-diagram. La red tiene 25,034 parámetros, distribuidos en dos capas convolucionales con filtros cuadrados, y dos capas completamente conectadas (250 y 3,690; 20,244 y 850 parámetros, respectivamente). Los filtros convolucionales son de tamaño $7 times 7$ píxeles, y la convolución se realiza con un paso (_stride_) de 2 píxeles, agregando relleno (_padding_) de 3 píxeles a cada lado. A la salida de cada capa convolucional y la primera capa completamente conectada se aplica la función ReLU. Una capa de _max-pool_ con regiones de $2 times 2$ píxeles se ubica entre las dos convolucionales, reduciendo cada dimensión a la mitad de su tamaño.
