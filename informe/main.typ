@@ -2,7 +2,9 @@
 #show: thmrules
 
 // TODO: borrador
-#let doc_title = "Visualización de CNNs mediante Deconvnets y Mapas Autoorganizados"
+
+#let doc_title = [Visualización de CNNs mediante Deconvnets y~Mapas Autoorganizados]
+
 #set page(
     paper: "a4",
     margin: 1in,
@@ -38,7 +40,6 @@
 #set math.equation(numbering: "(1)")
 #set figure(numbering: "1")
 #set enum(indent: 1em)
-#show link: underline
 
 #let definition = thmbox("definition", "Definición", inset: (x: 1.2em), base_level: 0)
 
@@ -70,7 +71,7 @@
     #v(2em)
     #align(center)[#smallcaps[Resumen]]
     #text(style: "italic")[
-        El uso de redes neuronales convolucionales para tareas de clasificación de imágenes está ampliamente estudiado. Sin embargo, interpretar su funcionamiento interno es beneficioso para la elección correcta de su arquitectura. En este trabajo, se utilizan las redes deconvolucionales introducidas por Zeiler _et al._ en 2014~@zeiler2014 como técnica de interpretabilidad. También se introducen dos visualizaciones, los _mapas de clases_ y _mapas de imágenes_, a partir de los mapas autoorganizados introducidos por Kohonen~@kohonen1982self, que permiten visualizar las representaciones internas de una red. Mostramos cómo puede usarse esta información para mejorar un modelo que reduce de 12~% a 10~% la tasa de error de testeo sobre la base de datos Fashion-MNIST, utilizando menos parámetros. El desempeño obtenido compite con el de modelos mucho más grandes y complejos, diseñados por fuerza bruta.
+        El uso de redes neuronales convolucionales para tareas de clasificación de imágenes está ampliamente estudiado. Interpretar su funcionamiento interno es beneficioso para la elección correcta de su arquitectura. En este trabajo, se utilizan las redes deconvolucionales presentadas por Zeiler _et al._ en 2014~@zeiler2014 como técnica de interpretabilidad. También se introducen dos visualizaciones, los _mapas de clases_ y _mapas de imágenes_, a partir de los mapas autoorganizados de Kohonen~@kohonen1982self, que permiten visualizar las representaciones internas de una red. Mostramos cómo puede usarse esta información para mejorar la tasa de error de testeo de un modelo de 12~% a 10~% sobre la base de datos Fashion-MNIST, utilizando menos parámetros. El desempeño obtenido compite con el de modelos mucho más grandes y complejos, diseñados por fuerza bruta.
     ]
 ]
 
@@ -87,9 +88,9 @@ Otras técnicas de interpretabilidad de redes hacen uso de mapas autoorganizados
 = Desarrollo
 <sec:desarrollo>
 
-Se emplean redes convolucionales clásicas, similares a las presentadas en~@lecun1989, entrenadas con el objetivo de categorizar las imágenes del conjunto de datos Fashion-MNIST~@xiao2017. Las redes están compuestas por una sucesión de bloques funcionales, los cuales pueden ser convolucionales, rectificadores, submuestreadores, o capas completamente conectadas (_fully connected_, o FC). Las capas convolucionales aprenden un conjunto de filtros, los cuales se convolucionan con sus entradas. Los rectificadores aplican la función ReLU (definida como $ReLU(x) = max(x, 0)$) a sus entradas. Los submuestradores son _max-pool_, que subdividen la entrada en regiones no solapadas y eligen de cada una el valor más grande para reducir la dimensión. Las capas completamente conectadas finalmente clasifican la imagen en función de los _features_ extraídos por las capas anteriores.
+Se emplean redes convolucionales clásicas, similares a las presentadas en~@lecun1989, entrenadas con el objetivo de categorizar las imágenes del conjunto de datos Fashion-MNIST~@xiao2017. Las redes están compuestas por una sucesión de bloques funcionales, los cuales pueden ser convolucionales, rectificadores, submuestreadores, o capas completamente conectadas (_fully connected_, o FC). Las capas convolucionales aprenden un conjunto de filtros, los cuales se convolucionan con sus entradas. Los rectificadores aplican la función ReLU (definida como $ReLU(x) = max(x, 0)$) a sus entradas. Los submuestreadores son _max-pool_, que subdividen la entrada en regiones no solapadas y eligen de cada una el valor más grande para reducir la dimensión. Las capas completamente conectadas finalmente clasifican la imagen en función de los _features_ extraídos por las capas anteriores.
 
-El entrenamiento de las redes se hace sobre el conjunto de datos Fashion-MNIST. Este _dataset_ se presenta como una alternativa más compleja al clásico MNIST, introducido por LeCun _et al._ en 1998~@lecun1998gradient. Fashion-MNIST consta de 60,000 imágenes de entrenamiento y 10,000 de evaluación, de $28 times 28$ píxeles en formato blanco y negro, las cuales muestran artículos de ropa distribuidos equitativamente entre diez categorías:
+El entrenamiento de las redes se hace sobre el conjunto de datos Fashion-MNIST. Este _dataset_ se presenta como una alternativa más compleja al clásico MNIST, introducido por LeCun _et al._ en 1998~@lecun1998gradient. Fashion-MNIST consta de 60,000 imágenes de entrenamiento y 10,000 de evaluación, de $28 times 28$ píxeles en escala de grises, las cuales muestran artículos de ropa distribuidos equitativamente entre diez categorías:
 0. _T-shirt/top_ (remera/top),
 1. _Trouser_ (pantalón),
 2. _Pullover_ (pulóver),
@@ -108,11 +109,11 @@ Algunos ejemplos de cada categoría se muestran en la @fig:examples.
     caption: [Ejemplos de evaluación del conjunto de datos Fashion-MNIST.],
 ) <fig:examples>
 
-Se entrena las redes utilizando retropropagación de errores (_error backpropagation_)~@rumelhart1986. La función de pérdida utilizada es la entropía cruzada, dado que la tarea es discriminativa. En todos los casos, se entrena durante diez épocas, en _batches_ de 128 muestras. Se utiliza el optimizador Adam~@kingma2014adam, y una tasa de aprendizaje fija elegida empíricamente para cada modelo.
+Se entrenan las redes utilizando retropropagación de errores (_error backpropagation_)~@rumelhart1986. La función de pérdida utilizada es la entropía cruzada, dado que la tarea es discriminativa. En todos los casos, se entrena durante diez épocas, en _batches_ de 128 muestras. Se utiliza el optimizador Adam~@kingma2014adam, y una tasa de aprendizaje fija elegida empíricamente para cada modelo.
 
 == Arquitectura de las redes
 
-Inicialmente, se elige una red convolucional de estructura sencilla denominada _FirstNet_, la cual se muestra en la @fig:first-diagram. La red tiene 25,034 parámetros, distribuidos en dos capas convolucionales con filtros cuadrados, y dos capas completamente conectadas (250 y 3,690; 20,244 y 850 parámetros, respectivamente). Los filtros convolucionales son de tamaño $7 times 7$ píxeles, y la convolución se realiza con un paso (_stride_) de 2 píxeles, agregando relleno (_padding_) de 3 píxeles. A la salida de cada capa convolucional y la primera capa completamente conectada se aplica la función ReLU. Una capa de _max-pool_ se ubica entre las dos convolucionales.
+Inicialmente, se elige una red convolucional de estructura sencilla denominada _FirstNet_, la cual se muestra en la @fig:first-diagram. La red tiene 25,034 parámetros, distribuidos en dos capas convolucionales con filtros cuadrados, y dos capas completamente conectadas (250 y 3,690; 20,244 y 850 parámetros, respectivamente). Los filtros convolucionales son de tamaño $7 times 7$ píxeles, y la convolución se realiza con un paso (_stride_) de 2 píxeles, agregando relleno (_padding_) de 3 píxeles a cada lado. A la salida de cada capa convolucional y la primera capa completamente conectada se aplica la función ReLU. Una capa de _max-pool_ con regiones de $2 times 2$ píxeles se ubica entre las dos convolucionales, reduciendo cada dimensión a la mitad de su tamaño.
 
 #figure(
     placement: auto,
@@ -121,7 +122,7 @@ Inicialmente, se elige una red convolucional de estructura sencilla denominada _
     caption: [Arquitectura de la _FirstNet_.],
 ) <fig:first-diagram>
 
-La arquitectura original se estudia utilizando las técnicas de interpretabilidad, según se especifica en las siguientes secciones. En función de las observaciones, se diseña una segunda red de tamaño (cantidad de parámetros) similar a _FirstNet_, denominada _SecondNet_, cuya arquitectura se muestra en la @fig:second-diagram. _SecondNet_ tiene 21,572 parámetros, distribuidos en cuatro capas convolucionales y una única capa completamente conectada (90, 1,312, 5,220 y 11,700; y 3,250 parámetros, respectivamente). Los filtros convolucionales son de tamaño $3 times 3$, el _stride_ es de 1 píxel, y el _padding_ es de 1 píxel a cada lado para las primeras dos capas, y nulo para las últimas dos. Hay dos capas de _max-pool_, intercaladas entre las convolucionales. Los filtros de esta red y las sucesivas se renormalizan si su valor cuadrático medio supera 0.1, como sugiere~@zeiler2014.
+La arquitectura original se estudia utilizando las técnicas de interpretabilidad, según se especifica en las siguientes secciones. En función de las observaciones, se diseña una segunda red con una cantidad de parámetros similar a la _FirstNet_, denominada _SecondNet_, cuya arquitectura se muestra en la @fig:second-diagram. _SecondNet_ tiene 21,572 parámetros, distribuidos en cuatro capas convolucionales y una única capa completamente conectada (90, 1,312, 5,220 y 11,700; y 3,250 parámetros, respectivamente). Los filtros convolucionales son de tamaño $3 times 3$, el _stride_ es de 1 píxel, y el _padding_ es de 1 píxel a cada lado para las primeras dos capas, y nulo para las últimas dos. Hay dos capas de _max-pool_, intercaladas entre las convolucionales. Los filtros de esta red y las sucesivas se renormalizan si su valor cuadrático medio supera 0.1, como sugiere~@zeiler2014.
 
 #figure(
     placement: auto,
@@ -139,7 +140,7 @@ Similarmente, estudiando con técnicas de interpretabilidad a _SecondNet_, se di
     caption: [Arquitectura de la _ThirdNet_.],
 ) <fig:third-diagram>
 
-Por último, se diseñó una red sin la restricción de tamaño aplicada a las anteriores, denominada _LargeNet_, cuya arquitectura se muestra en la @fig:large-diagram. _LargeNet_ tiene 79,873 parámetros, distribuidos en seis capas convolucionales y tres completamente conectadas (160, 2,320, 3,625, 5,650, 8,136 y 11,700; 41,600, 6,192 y 490 parámetros, respectivamente). Las capas convolucionales tienen los mismos tamaños de fitros, _strides_ y _paddings_ que la _ThirdNet_. La cantidad y posición de las capas de _max-pool_ también es la misma.
+Por último, se diseñó una red sin la restricción de tamaño aplicada a las anteriores, denominada _LargeNet_, cuya arquitectura se muestra en la @fig:large-diagram. _LargeNet_ tiene 79,873 parámetros, distribuidos en seis capas convolucionales y tres completamente conectadas (160, 2,320, 3,625, 5,650, 8,136 y 11,700; 41,600, 6,192 y 490 parámetros, respectivamente). Las capas convolucionales tienen los mismos tamaños de filtros, _strides_ y _paddings_ que la _ThirdNet_. La cantidad y posición de las capas de _max-pool_ también es la misma.
 
 #figure(
     placement: auto,
@@ -150,7 +151,7 @@ Por último, se diseñó una red sin la restricción de tamaño aplicada a las a
 
 == Métrica de desempeño
 
-La métrica principal evaluada es la tasa de error de evaluación, o _test error rate_. Para calcularla, se comparan las clasificaciones hechas por la red para todo el conjunto de evaluación, y se cuenta la cantidad de errores cometidos por el modelo (diferencias entre clase predicha y clase real). La tasa de error de evaluación es el cociente entre el número de errores y la cantidad de muestras del conjunto (10,000 para Fashion-MNIST). Un modelo es mejor que otro si su tasa de error de evaluación es inferior. Dado que el entrenamiento de las redes es estocástico, el desempeño de una red puede presentar dispersión. Para contrarrestar esto, se entrena cada modelo cinco veces, obteniendo la media y el desvío estándar de su tasa de error. Con esta información, puede realizarse una prueba $t$ de Student para determinar si la diferencia entre las tasas de error de evaluación medias de dos modelos es significativa.
+La métrica principal evaluada es la tasa de error de evaluación, o _test error rate_. Para calcularla, se comparan las clasificaciones hechas por la red para todo el conjunto de evaluación con las clases reales, y se cuenta la cantidad de errores cometidos por el modelo (diferencias entre clase predicha y clase real). La tasa de error de evaluación es el cociente entre el número de errores y la cantidad de muestras del conjunto (10,000 para Fashion-MNIST). Un modelo es mejor que otro si su tasa de error de evaluación es inferior. Dado que el entrenamiento de las redes es estocástico, el desempeño de una red puede presentar dispersión. Para contrarrestar esto, se entrena cada modelo cinco veces, obteniendo la media y el desvío estándar de su tasa de error. Con esta información, puede realizarse una prueba $t$ de Student para determinar si la diferencia entre las tasas de error de evaluación medias de dos modelos es significativa.
 
 == Redes deconvolucionales
 
@@ -158,7 +159,7 @@ Con el objetivo de mejorar la arquitectura inicialmente planteada en la _FirstNe
 
 Las redes convolucionales diseñadas se analizan utilizando redes deconvolucionales, con las técnicas desarrolladas en~@zeiler2014. Para cada una de las arquitecturas, se construyó su correspondiente red deconvolucional. La red deconvolucional toma como entrada una activación intermedia de la red (la salida de alguna de las capas convolucionales), y la retrotrae hacia el espacio de los píxeles. Cada uno de los bloques que componen la red original se reemplaza por una función que invierte la operación.
 
-Los bloques de convolución se reemplazan por convoluciones traspuestas. Las rectificaciones ReLU se mantienen, garantizando que los mapas tengan activaciones no negativas. El submuestreo, al no ser inversible, se reemplaza por una capa de _unpooling_ que utiliza la posición de la cual se extrajo originalmente el máximo valor y lo coloca en el correspondiente píxel, estableciendo los demás a cero. Este último reemplazo requiere que cuando se evalúa el conjunto de datos hacia adelante (usando la red original) se guarden los índices de los valores que activan cada máximo.
+Los bloques de convolución se reemplazan por convoluciones traspuestas. Las rectificaciones ReLU se mantienen, garantizando que los mapas tengan activaciones no negativas. El submuestreo, al no ser invertible, se reemplaza por una capa de _unpooling_ que utiliza la posición de la cual se extrajo originalmente el máximo valor y lo coloca en el correspondiente píxel, estableciendo los demás a cero. Este último reemplazo requiere que cuando se evalúa el conjunto de datos hacia adelante (usando la red original) se guarden los índices de los valores que activan cada máximo.
 
 Siguiendo las ideas presentadas en~@zeiler2014, se intenta comprender a qué aspectos de las imágenes la red le da mayor importancia para realizar la clasificación. Para ello, para cada filtro de cada capa se toma la activación más fuerte entre todas las imágenes, y se la proyecta sobre el espacio de píxeles usando la deconvolución. Como la red se entrena discriminativamente, las activaciones más fuertes se corresponden con las partes de la imagen que más ayudan a clasificarla. La visualización de los filtros de la _FirstNet_ se muestran en la @fig:first-deconv. Notar que en la primera capa, los filtros tienen campos receptivos de $7 times 7$ (el tamaño del filtro) por lo que se activan ante porciones pequeñas de la imagen original. En la segunda capa, la combinación de dos filtros en cascada y el _max-pooling_, agrandan el campo receptivo hasta cubrir prácticamente toda la imagen.
 
@@ -188,11 +189,11 @@ Por otro lado, la capa 2 de la red parece incapaz de reconstruir los objetos ori
 
 == Matrices de confusión
 
-Típicamente, el desempeño de un clasificador se evalúa usando su tasa de error, es decir, la proporción de muestras erróneamente clasificadas sobre el total de muestras evaluadas. Sin embargo, cuando se trabaja con múltiples clases esto no es suficiente dado que se pierde la información sobre si hay clases con tasas de error mayores que otras, y cuáles son. Para remediar esto, se utilizan las matrices de confusión~@miller1955analysis. Una matriz de confusión es una matriz cuadrada con tantas filas y columnas como clases tiene el conjunto de datos. Las filas representan las clases verdaderas, mientras que las columnas son las clases predichas por el modelo. En cada entrada, se coloca la cantidad de muestras que son de la clase correpondiente a la fila y que fueron clasificadas como pertenecientes a la clase de la columna. Por ejemplo, si la segunda fila son pantalones y la sexta columna son sandalias, en dicha entrada se colocará la cantidad de pantalones que el modelo creyó que eran sandalias. Naturalmente, un modelo perfecto tendrá únicamente valores no nulos en la diagonal, ya que allí la clase real y la predicha coinciden.
+Típicamente, el desempeño de un clasificador se evalúa usando su tasa de error, es decir, la proporción de muestras erróneamente clasificadas sobre el total de muestras evaluadas. Sin embargo, cuando se trabaja con múltiples clases esto no es suficiente dado que se pierde información sobre si hay clases con tasas de error mayores que otras, y cuáles son. Para remediar esto, se utilizan las matrices de confusión~@miller1955analysis. Una matriz de confusión es una matriz cuadrada con tantas filas y columnas como clases tiene el conjunto de datos. Las filas representan las clases verdaderas, mientras que las columnas son las clases predichas por el modelo. En cada entrada, se coloca la cantidad de muestras que son de la clase correspondiente a la fila y que fueron clasificadas como pertenecientes a la clase de la columna. Por ejemplo, si la segunda fila son pantalones y la sexta columna son sandalias, en dicha entrada se colocará la cantidad de pantalones que el modelo creyó que eran sandalias. Naturalmente, un modelo perfecto tendrá únicamente valores no nulos en la diagonal, ya que allí la clase real y la predicha coinciden.
 
 En este trabajo se utiliza una variación de las matrices de confusión, donde se normalizan las cantidades en función de la clase verdadera. Es decir, cada fila se divide por la cantidad de muestras de su clase, de manera tal que la fila sume 100~%. De esta forma, se obtiene una tasa de aciertos para cada categoría, así como una tasa de error para cada uno de los posibles errores que comete la red.
 
-La matriz de confusión de la _FirstNet_ se muestra en la @fig:first-confusion. Si bien algunas categorías tienen una clasificación casi perfecta (zapatillas, bolsos y pantalones), las camisas tienen una tasa de error considerable. La matriz de confusión permite también ver con qué clases se confunde principalmente el modelo: las camisas incorrectamente clasificadas se confunden principalmente con remeras, pulóveres y camperas. Lograr una mejor distinción entre estas prendas será crucial si se quiere mejorar el desempeño global del modelo.
+La matriz de confusión de la _FirstNet_ se muestra en la @fig:first-confusion. Si bien algunas categorías tienen una clasificación casi perfecta (zapatillas, bolsos y pantalones), las camisas tienen una tasa de error considerable. La matriz de confusión permite también ver con qué clases se confunde el modelo: las camisas incorrectamente clasificadas se categorizan generalmente como remeras, pulóveres o camperas. Lograr una mejor distinción entre estas prendas será crucial si se quiere mejorar el desempeño global del modelo.
 
 #figure(
     placement: auto,
@@ -205,11 +206,11 @@ La matriz de confusión de la _FirstNet_ se muestra en la @fig:first-confusion. 
 
 Se usan mapas autoorganizados (_self organizing maps_, o SOM) para visualizar cómo se distribuyen las muestras en el espacio latente de alta dimensionalidad de las activaciones de una capa. Los mapas autoorganizados introducidos por Kohonen~@kohonen1982self son redes de neuronas, típicamente organizadas en una grilla bidimensional, que muestran un comportamiento emergente de autoorganización, preservando la topología de los datos de entrenamiento. Las neuronas se organizan de manera tal que las activaciones de neuronas vecinas son similares para eventos que se encuentran cerca en el espacio de entrada.
 
-Las visualizaciones utilizadas en este trabajo son variaciones de los ejemplos mostrados en la documentación de la biblioteca `minisom` para implemetar SOM en Python~@vettigli2018. La primera la denominaremos _mapa de clases_.
+Las visualizaciones utilizadas en este trabajo son variaciones de los ejemplos mostrados en la documentación de la biblioteca `minisom` para implementar SOM en Python~@vettigli2018. La primera la denominaremos _mapa de clases_.
 
 #definition("Mapa de clases")[
     Un _mapa de clases_ es una visualización que toma como entrada las activaciones de una capa de una red convolucional para cada una de las muestras de un conjunto de datos, y ubica en la posición de la neurona ganadora del SOM (la que más se activa ante dicha entrada) el número de clase al que se corresponde la muestra. El resultado es una grilla de números.
-]
+] <def:mapa-clases>
 
 La @fig:first-som muestra el mapa de clases construido con las activaciones de la última capa convolucional de la _FirstNet_. Observar cómo algunas de las clases se agrupan en forma clara (por ejemplo la clase 1, los pantalones), indicando que las activaciones de la _FirstNet_ son similares para todos lo pantalones. Por el contrario, la clase 6 de las camisas no está agrupada, mostrando que la red convolucional fue incapaz de extraer _features_ que se activen de manera similar en todas las camisas.
 
@@ -223,7 +224,7 @@ La @fig:first-som muestra el mapa de clases construido con las activaciones de l
 Una falencia de la técnica anterior es que se muestra únicamente la clase de las imágenes, sin referencia de cuál es la imagen original. Por ejemplo, no hay manera de entender visualmente por qué se forman dos agrupamientos para la clase 8 (los bolsos). La segunda visualización, que soluciona elegantemente este inconveniente, la denominaremos _mapa de imágenes_.
 
 #definition("Mapa de imágenes")[
-    Un _mapa de imágenes_ es una visualización que toma como entrada las activaciones de una capa de una red convolucional para cada una de las muestras de un conjunto de datos, y ubica en la posición de la neurona ganadora del SOM (la que más se activa ante dicha entrada) la imagen de entrada. El resultado es una grilla de imágenes.
+    Un _mapa de imágenes_ es similar al mapa de clases de la @def:mapa-clases, pero en la grilla se coloca la imagen de entrada en lugar de su clase. El resultado es una grilla de imágenes.
 ]
 
 Esta visualización trae la ventaja de agregar información visual fácil de analizar, a costa de una imagen más grande y que carece de información de clases. El mapa de imágenes basado en las activaciones de la última capa convolucional de la _FirstNet_ se muestra en la @fig:first-som-imgs. Este segundo mapa revela información nueva: los dos agrupamientos de los bolsos se corresponden con la presencia o no de una correa. A pesar de pertenecer a la misma clase, la red aprendió a darles representaciones sustancialmente diferentes a los bolsos con correa de aquellos que no la tienen.
@@ -232,7 +233,7 @@ Esta visualización trae la ventaja de agregar información visual fácil de ana
     placement: auto,
     scope: "parent",
     caption: [Mapa de imágenes de las activaciones de la última capa convolucional de la _FirstNet_. Las imágenes se encuentran posicionadas sobre la ubicación de la neurona ganadora del SOM ante las activaciones de esa entrada.],
-    image("img/first_som_examples.svg", width: 80%)
+    image("img/first_som_examples.svg", width: 85%)
 ) <fig:first-som-imgs>
 
 = Resultados
@@ -246,7 +247,7 @@ La @fig:tasas muestra los desempeños obtenidos para las diferentes redes neuron
     image("img/error_rates.svg", width: 100%)
 ) <fig:tasas>
 
-Como se explicó en la @sec:desarrollo, primero se entrena la _FirstNet_ con el conjunto de datos Fashion-MNIST. La red obtenida logra una tasa de error del 12.0~%. En función de las observaciones hechas sobre la @fig:first-deconv, se determina que el tamaño de los filtros ($7 times 7$) y el _stride_ (2 píxeles) son inadecuados para el conjunto de datos en cuestión. Sin aumentar la cantidad de parámetros, se modifican los filtros a un tamaño de $3 times 3$ y el _stride_ se reduce a un píxel. Para poder aumentar la cantidad de capas convolucionales y de filtros, se elimina una de las capas completamente conectadas. La hipótesis es que si la nueva red, la _SecondNet_ de la @fig:second-diagram, produce mejores representaciones internas al reducir el tamaño de los filtros, la capa final no necesitará demasiados parámetros para obtener resultados similares. Por otro lado, la matriz de confusión de la _FirstNet_ y el mal agrupamiento en el mapa de clases sugiere que el mayor lugar para mejoras está en la clasificación de las camisas. Aumentar el número de filtros por capa y el número de capas debería darle a la red mayor capacidad para extraer _features_ útiles para distinguir las camisas de las otras prendas similares.
+Como se explicó en la @sec:desarrollo, primero se entrena la _FirstNet_ con el conjunto de datos Fashion-MNIST. La red obtenida logra una tasa de error del 12.0~%. En función de las observaciones hechas sobre la @fig:first-deconv, se determina que el tamaño de los filtros ($7 times 7$) y el _stride_ (2 píxeles) son inadecuados para el conjunto de datos en cuestión. Sin aumentar la cantidad de parámetros, se modifican los filtros a un tamaño de $3 times 3$ y el _stride_ se reduce a un píxel. Para poder aumentar la cantidad de capas convolucionales y de filtros, se elimina una de las capas completamente conectadas. La hipótesis es que si la nueva red, la _SecondNet_ de la @fig:second-diagram, produce mejores representaciones internas al reducir el tamaño de los filtros, la capa final no necesitará demasiados parámetros para obtener resultados similares. Por otro lado, la matriz de confusión de la _FirstNet_ y el mal agrupamiento en el mapa de clases sugieren que el mayor lugar para mejoras está en la clasificación de las camisas. Aumentar el número de filtros por capa y el número de capas debería darle a la red mayor capacidad para extraer _features_ útiles para distinguir las camisas de las otras prendas similares.
 
 La _SecondNet_, diseñada según las mejoras antes notadas, logra una tasa de error del 11.1~%. reduciendo en 0.93 puntos porcentuales respecto de la _FirstNet_ ($p < 0.0001$). Este resultado es más interesante si se considera que la _SecondNet_ tiene 13.8~% menos parámetros. Con el objetivo de determinar si los filtros son más apropiados y considerar posibles mejoras, se analizó por medio de _deconvnets_ a este segundo modelo. Las activaciones de los filtros de la _SecondNet_ se muestran en la @fig:second-deconv. Ahora es posible ver que la primera capa aprendió a reconocer líneas orientadas, principalmente verticales y horizontales, así como una diagonal. En cuanto a las siguientes capas, los filtros combinan las detecciones de bajo nivel de las capas anteriores para activarse ante figuras más complejas. La capa 2 se activa por ejemplo ante dos bordes paralelos para detectar mangas, o ángulos para detectar tacos. La tercera capa detecta figuras aún más complejas, como la parte central de las sandalias. La última se activa ante figuras casi completas.
 
@@ -322,7 +323,7 @@ En el repositorio de Fashion-MNIST#footnote([Disponible en #link("https://github
 
 = Conclusiones
 
-Este trabajo estudió el uso de técnicas de interpretabilidad de redes convolucionales, con el foco puesto en obtener mejor desempeño en redes pequeñas. Siguiendo las ideas presentadas por Zeiler _et al._~@zeiler2014 sobre redes deconvolucionales, se logró comprender visualmente cómo las redes convolucionales entrenadas para tareas de clasificación desarrollan capacidades de detección de patrones simples en sus primeras capas, y los combinan en las subsiguientes para reconocer características de más alto nivel. Esta técnica permitió reconocer falencias en la estructura de los filtros de la _FirstNet_, y las iteraciones posteriores mejoraron su buen desempeño original, reduciendo la tasa de error en forma significativa del 12~% al 10~%, en una red de apenas 22k parámetros. Este resultado en redes pequeñas es competitivo con el obtenido por "fuerza bruta" con una red de 80k parámetros, y está cerca de los mejores resultados reportados con redes convolucionales aún más grandes.
+Este trabajo estudió el uso de técnicas de interpretabilidad de redes convolucionales, con el foco puesto en obtener mejor desempeño en redes pequeñas. Siguiendo las ideas presentadas por Zeiler _et al._~@zeiler2014 sobre redes deconvolucionales, se logró comprender visualmente cómo las redes convolucionales entrenadas para tareas de clasificación desarrollan capacidades de detección de patrones simples en sus primeras capas, y los combinan en las subsiguientes para reconocer características de alto nivel. Esta técnica permitió reconocer falencias en la estructura de los filtros de la _FirstNet_, y las iteraciones posteriores mejoraron su buen desempeño original, reduciendo la tasa de error en forma significativa del 12~% al 10~%, en una red de apenas 22k parámetros. Este resultado en redes pequeñas es competitivo con el obtenido por "fuerza bruta" con una red de 80k parámetros, y está cerca de los mejores resultados reportados con redes convolucionales aún más grandes.
 
 Simultáneamente, se utilizaron los _mapas de clases_ y _mapas de características_ como herramientas de visualización que permiten comprender cómo las redes representan internamente a las imágenes. Entender este proceso es crucial para mejorar el desempeño de los modelos. Por otro lado, la visualización también revela comportamientos interesantes sobre el conjunto de datos, como la clara distinción interna que hace la _FirstNet_ entre bolsos con y sin correa.
 
