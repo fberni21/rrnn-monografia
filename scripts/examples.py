@@ -30,7 +30,7 @@ def main():
                         ha='right', va='center')
 
     plt.tight_layout()
-    plt.subplots_adjust(left=0.15)
+    plt.subplots_adjust(left=0.16)
     plt.savefig('../img/examples.svg')
     plt.show()
 

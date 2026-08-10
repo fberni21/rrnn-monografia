@@ -16,7 +16,7 @@ def main():
     symbols = np.where(pvalues < 0.001, '(*)', 'n.s.')
     labels = list(f"{e:.1f} %" + (f" {s}" if i > 0 else "")
                   for i, (e, s) in enumerate(zip(error_rates, symbols)))
-    ax.bar_label(bars, padding=2, labels=labels)
+    ax.bar_label(bars, padding=2, labels=labels, label_type="center")
 
     plt.ylabel('Tasa de error de evaluación [%]')
     plt.grid(zorder=0)

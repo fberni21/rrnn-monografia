@@ -2,6 +2,7 @@
 #show: thmrules
 
 // TODO: borrador
+#let doc_title = "Visualización de CNNs mediante Deconvnets y Mapas Autoorganizados"
 #set page(
     paper: "a4",
     margin: 1in,
@@ -11,7 +12,8 @@
         if counter(page).get().first() > 1 [
             _Franco Berni_
             #h(1fr)
-            TP3: Redes de Kohonen
+            #doc_title
+            #line(length: 100%)
         ]
     },
     background: rotate(-60deg, text(84pt, font: "Adwaita Sans", fill: rgb("DDDDDD"))[*BORRADOR*])
@@ -36,6 +38,7 @@
 #set math.equation(numbering: "(1)")
 #set figure(numbering: "1")
 #set enum(indent: 1em)
+#show link: underline
 
 #let definition = thmbox("definition", "Definición", inset: (x: 1.2em), base_level: 0)
 
@@ -49,10 +52,9 @@
     ))
 }
 
-#set document(title: [Mejora de Arquitecturas Convolucionales\ mediante Técnicas de Interpretabilidad])
+#set document(title: doc_title)
 
-#show title: smallcaps
-#show title: set text(size: 17pt)
+#show title: set text(size: 17pt, hyphenate: false)
 #show figure.caption: set text(size: 8pt)
 
 #place(top + center, float: true, scope: "parent")[
@@ -114,8 +116,8 @@ Inicialmente, se elige una red convolucional de estructura sencilla denominada _
 
 #figure(
     placement: auto,
-    scope: "parent",
-    image("img/first_diagram.svg", width: 41.2%),
+    scope: "column",
+    image("img/first_diagram.svg", width: 85%),
     caption: [Arquitectura de la _FirstNet_.],
 ) <fig:first-diagram>
 
@@ -224,13 +226,13 @@ Una falencia de la técnica anterior es que se muestra únicamente la clase de l
     Un _mapa de imágenes_ es una visualización que toma como entrada las activaciones de una capa de una red convolucional para cada una de las muestras de un conjunto de datos, y ubica en la posición de la neurona ganadora del SOM (la que más se activa ante dicha entrada) la imagen de entrada. El resultado es una grilla de imágenes.
 ]
 
-Esta visualización trae la ventaja de agregar información visual fácil de analizar, a costa de una imagen más grande y que carece de información de clases. El mapa de imágenes basado en las activaciones de la última capa convolucional de la _FirstNet_ se muestra en la @fig:first-som-imgs. Este segundo mapa revela información nueva: los dos agrupamientos de los bolsos se corresponden con la presencia o no de una soga. A pesar de pertenecer a la misma clase, la red aprendió a darles representaciones sustancialmente diferentes a los bolsos con soga de aquellos que no la tienen.
+Esta visualización trae la ventaja de agregar información visual fácil de analizar, a costa de una imagen más grande y que carece de información de clases. El mapa de imágenes basado en las activaciones de la última capa convolucional de la _FirstNet_ se muestra en la @fig:first-som-imgs. Este segundo mapa revela información nueva: los dos agrupamientos de los bolsos se corresponden con la presencia o no de una correa. A pesar de pertenecer a la misma clase, la red aprendió a darles representaciones sustancialmente diferentes a los bolsos con correa de aquellos que no la tienen.
 
 #figure(
     placement: auto,
     scope: "parent",
     caption: [Mapa de imágenes de las activaciones de la última capa convolucional de la _FirstNet_. Las imágenes se encuentran posicionadas sobre la ubicación de la neurona ganadora del SOM ante las activaciones de esa entrada.],
-    image("img/first_som_examples.svg", width: 100%)
+    image("img/first_som_examples.svg", width: 80%)
 ) <fig:first-som-imgs>
 
 = Resultados
@@ -303,9 +305,9 @@ Los cambios que derivan en la _ThirdNet_ se ven motivados por los filtros de la 
 
 La inspección visual de las técnicas de interpretabilidad muestra resultados similares a los de la _SecondNet_. No se encuentran nuevos puntos de mejora, por lo que esta red fue la última entrenada con estos métodos. Como comparación, se entrenó un modelo considerablemente más grande, la _LargeNet_ de casi 80,000 parámetros. El objetivo es ver cuánto más puede disminuirse la tasa de error utilizando simple fuerza bruta. Esta red obtiene una tasa de error de 9.3~%, una reducción de 0.86 puntos porcentuales respecto de la _ThirdNet_ ($p = 0.0004$). Esto sugiere que las técnicas de interpretabilidad empleadas para diseñar las redes logran un desempeño satisfactorio y casi tan bueno como una red mucho más grande. La matriz de confusión revela que el desempeño mejora principalmente en las remeras/tops, y en los pulóveres.
 
-La _LargeNet_ cuenta con el número más grande de filtros en su primera capa y muestra un fenómeno interesante. Las activaciones más grandes de la primera capa se muestran en la @fig:large-deconv. La mayor disponibilidad de filtros permitió que la red aprenda a reconocer más formas que líneas verticales y horizontales, haciendo mejor uso de ellos que en las redes anteriores. Hay filtros que reconocen patrones en vestidos, líneas diagonales en sandalias, líneas paralelas en la soga de un bolso, etc. Esto se contrapone con la hipótesis que se formuló tras ver los filtros de la _SecondNet_: la red aprendía redundantemente a reconocer líneas verticales y horizontales no porque tuviera demasiados filtros en su primera capa, sino porque no tenía la suficiente cantidad. Este aspecto contraintuitivo remarca la dificultad de interpretar cómo un cambio de arquitectura en una red afectará su desempeño, y motiva a continuar el estudio de técnicas de interpretabilidad.
+La _LargeNet_ cuenta con el número más grande de filtros en su primera capa y muestra un fenómeno interesante. Las activaciones más grandes de la primera capa se muestran en la @fig:large-deconv. La mayor disponibilidad de filtros permitió que la red aprenda a reconocer más formas que líneas verticales y horizontales, haciendo mejor uso de ellos que en las redes anteriores. Hay filtros que reconocen patrones en vestidos, líneas diagonales en sandalias, líneas paralelas en la correa de un bolso, etc. Esto se contrapone con la hipótesis que se formuló tras ver los filtros de la _SecondNet_: la red aprendía redundantemente a reconocer líneas verticales y horizontales no porque tuviera demasiados filtros en su primera capa, sino porque no tenía la suficiente cantidad. Este aspecto contraintuitivo remarca la dificultad de interpretar cómo un cambio de arquitectura en una red afectará su desempeño, y motiva a continuar el estudio de técnicas de interpretabilidad.
 
-En~@xiao2017 se citan algunos resultados obtenidos con diferentes arquitecturas y técnicas de aprendizaje para la tarea de clasificación del conjunto Fashion-MNIST#footnote[Esos resultados _no_ fueron validados por terceros.]. El mejor resultado citado es una tasa de error de 3.3~%, utilizando una _wide residual network_~@zagoruyko2016wide. Por otro lado, el mejor desempeño para redes convolucionales de menos de 100,000 parámetros es una tasa de error del 7.5~%.
+En el repositorio de Fashion-MNIST#footnote([Disponible en #link("https://github.com/zalandoresearch/fashion-mnist#benchmark")]) se citan algunos resultados obtenidos con diferentes arquitecturas y técnicas de aprendizaje para la tarea de clasificación#footnote[Esos resultados _no_ fueron validados por terceros.]. El mejor resultado citado es una tasa de error de 3.3~%, utilizando una _wide residual network_~@zagoruyko2016wide. Por otro lado, el mejor desempeño para redes convolucionales de menos de 100,000 parámetros es una tasa de error del 7.5~%.
 
 #figure(
     placement: auto,
@@ -322,13 +324,13 @@ En~@xiao2017 se citan algunos resultados obtenidos con diferentes arquitecturas 
 
 Este trabajo estudió el uso de técnicas de interpretabilidad de redes convolucionales, con el foco puesto en obtener mejor desempeño en redes pequeñas. Siguiendo las ideas presentadas por Zeiler _et al._~@zeiler2014 sobre redes deconvolucionales, se logró comprender visualmente cómo las redes convolucionales entrenadas para tareas de clasificación desarrollan capacidades de detección de patrones simples en sus primeras capas, y los combinan en las subsiguientes para reconocer características de más alto nivel. Esta técnica permitió reconocer falencias en la estructura de los filtros de la _FirstNet_, y las iteraciones posteriores mejoraron su buen desempeño original, reduciendo la tasa de error en forma significativa del 12~% al 10~%, en una red de apenas 22k parámetros. Este resultado en redes pequeñas es competitivo con el obtenido por "fuerza bruta" con una red de 80k parámetros, y está cerca de los mejores resultados reportados con redes convolucionales aún más grandes.
 
-Simultáneamente, se utilizaron los _mapas de clases_ y _mapas de características_ como herramientas de visualización que permiten comprender cómo las redes representan internamente a las imágenes. Entender este proceso es crucial para mejorar el desempeño de los modelos. Por otro lado, la visualización también revela comportamientos interesantes sobre el conjunto de datos, como la clara distinción interna que hace la _FirstNet_ entre bolsos con y sin soga.
+Simultáneamente, se utilizaron los _mapas de clases_ y _mapas de características_ como herramientas de visualización que permiten comprender cómo las redes representan internamente a las imágenes. Entender este proceso es crucial para mejorar el desempeño de los modelos. Por otro lado, la visualización también revela comportamientos interesantes sobre el conjunto de datos, como la clara distinción interna que hace la _FirstNet_ entre bolsos con y sin correa.
 
 Finalmente, se destaca que la falta de intuición sobre el funcionamiento interno de los modelos puede llevar a decisiones de diseño incorrectas. Por ejemplo, la reducción de filtros en la primera capa de la _ThirdNet_ parecía lógica tras observar los filtros de la _SecondNet_, pero esta decisión resultó equivocada a la luz de los filtros vistos en el modelo más grande. Mejorar las técnicas de interpretabilidad y desarrollar nuevas herramientas será clave para diseñar modelos mejores y más eficientes.
 
 #bibliography("refs.bib", style: "institute-of-electrical-and-electronics-engineers")
 
 // TODO: balancear columnas
-#place(bottom, float: true, scope: "parent", v(13.5cm))
+#place(bottom, float: true, scope: "parent", v(17cm))
 
 // vim: ts=4 sts=4 sw=4 lbr wrap
