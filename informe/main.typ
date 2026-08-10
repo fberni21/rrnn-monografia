@@ -1,6 +1,7 @@
 #import "@preview/ctheorems:1.1.3": *
 #show: thmrules
 
+// TODO: borrador
 #set page(
     paper: "a4",
     margin: 1in,
@@ -12,7 +13,8 @@
             #h(1fr)
             TP3: Redes de Kohonen
         ]
-    }
+    },
+    background: rotate(-60deg, text(84pt, font: "Adwaita Sans", fill: rgb("DDDDDD"))[*BORRADOR*])
 )
 #set text(
     font: "New Computer Modern",
@@ -65,7 +67,9 @@
 
     #v(2em)
     #align(center)[#smallcaps[Resumen]]
-    #text(style: "italic")[]
+    #text(style: "italic")[
+        El uso de redes neuronales convolucionales para tareas de clasificación de imágenes está ampliamente estudiado. Sin embargo, interpretar su funcionamiento interno es beneficioso para la elección correcta de su arquitectura. En este trabajo, se utilizan las redes deconvolucionales introducidas por Zeiler _et al._ en 2014~@zeiler2014 como técnica de interpretabilidad. También se introducen dos visualizaciones, los _mapas de clases_ y _mapas de imágenes_, a partir de los mapas autoorganizados introducidos por Kohonen~@kohonen1982self, que permiten visualizar las representaciones internas de una red. Mostramos cómo puede usarse esta información para mejorar un modelo que reduce de 12~% a 10~% la tasa de error de testeo sobre la base de datos Fashion-MNIST, utilizando menos parámetros. El desempeño obtenido compite con el de modelos mucho más grandes y complejos, diseñados por fuerza bruta.
+    ]
 ]
 
 #let ReLU = math.op("ReLU")
@@ -322,8 +326,9 @@ Simultáneamente, se utilizaron los _mapas de clases_ y _mapas de característic
 
 Finalmente, se destaca que la falta de intuición sobre el funcionamiento interno de los modelos puede llevar a decisiones de diseño incorrectas. Por ejemplo, la reducción de filtros en la primera capa de la _ThirdNet_ parecía lógica tras observar los filtros de la _SecondNet_, pero esta decisión resultó equivocada a la luz de los filtros vistos en el modelo más grande. Mejorar las técnicas de interpretabilidad y desarrollar nuevas herramientas será clave para diseñar modelos mejores y más eficientes.
 
-// TODO: considerar agregar los resultados de las deconvoluciones, las matrices de confusión, y los mapas de clases/imágenes para las redes faltantes, dentro de un anexo para no estorbar la lectura, y solo dejar un par de ejemplos útiles dentro del cuerpo.
-
 #bibliography("refs.bib", style: "institute-of-electrical-and-electronics-engineers")
+
+// TODO: balancear columnas
+#place(bottom, float: true, scope: "parent", v(13.5cm))
 
 // vim: ts=4 sts=4 sw=4 lbr wrap
